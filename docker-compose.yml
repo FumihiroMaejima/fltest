@@ -2,10 +2,10 @@ version: "3.7"
 
 services:
   flask:
+    #container_name: fltest_web
     build: .
     ports:
       - 5000:5000
-    container_name: fltest_web
     volumes:
       - ./src:/code
     tty: true
