@@ -1,15 +1,10 @@
-from flask import Flask, jsonify
-
+from flask import Flask
 app = Flask(__name__)
-app.config['JSON_AS_ASCII'] = False
 
+@app.route("/")
+def hello():
+    from datetime import datetime
+    return "hello, " + datetime.now().strftime('%Y/%m/%d %H:%M:%S')
 
-@app.route('/')
-def index():
-  return jsonify({
-      "message": "テスト!!"
-  })
-
-
-if __name__ == '__main__':
-  app.run()
+if __name__ == "__main__":
+    app.run(host='0.0.0.0')

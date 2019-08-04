@@ -7,7 +7,7 @@ services:
     ports:
       - 5000:5000
     volumes:
-      - ./src:/code
+      - "./src:/code"
     tty: true
     environment:
       TZ: Asia/Tokyo
