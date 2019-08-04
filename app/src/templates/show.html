@@ -1,0 +1,36 @@
+{% extends "layout.html" %}
+{% block content %}
+<div class="container">
+
+    <div class="card bg-light">
+        <div class="card-header">
+            <h2>{{ post.title }}</h2>
+        </div>
+        <div class="card-body">
+            <blockquote class="blockquote mb-0">
+                <p>{{ post.content }}</p>
+                <footer class="blockquote-footer"><cite title="Source Title">(Last Update: {{ post.date }})</cite>
+                </footer>
+            </blockquote>
+            {% if post.commit == 1 %}
+            <div class="alert alert-success" role="alert">
+                完了しています
+            </div>
+            {% endif %}
+        </div>
+    </div>
+
+    <br>
+    <div>
+        <a href="/edit/{{ post.id }}" class="btn btn-warning far fa-edit"> 編集 </a>
+        <a href="/destroy/{{ post.id }}" class="btn btn-danger fas fa-trash-alt"
+            onclick="return confirm('この項目を削除します。よろしいですか？')"> 削除 </a>
+        <a href="/done/{{ post.id }}" class="btn btn-info fas fa-check-circle"> Done </a>
+        <a href="/undone/{{ post.id }}" class="btn btn-success fas fa-undo-alt"> Undone </a>
+    </div>
+
+    <br>
+    <p><a href="/" class="btn btn-default">一覧に戻る</a></p>
+
+</div>
+{% endblock %}

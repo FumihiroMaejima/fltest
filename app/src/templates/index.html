@@ -1,0 +1,36 @@
+{% extends "layout.html" %}
+{% block content %}
+<div class="container">
+    <h1>ToDo</h1>
+
+    <table class="table table-hover table-responsive">
+        <tr>
+            <th>Last Update</th>
+            <th>Title</th>
+            <th></th>
+            <th></th>
+            <th></th>
+        </tr>
+        {% for post in posts %}
+        <div class="row">
+            <tr>
+                <td>{{ post.date }}</td>
+                {% if post.commit == 1 %}
+                <td><del>{{ post.title }}</del></td>
+                {% else %}
+                <td>{{ post.title }}</td>
+                {% endif %}
+                <td><a href="/show/{{ post.id }}" class="btn btn-success far fa-file-alt"> 詳細 </a></td>
+                <td><a href="/done/{{ post.id }}" class="btn btn-info fas fa-check-circle"> Done </a></td>
+                <td><a href="/undone/{{ post.id }}" class="btn btn-success fas fa-undo-alt"> Undone </a></td>
+            </tr>
+        </div>
+        {% endfor %}
+    </table>
+    <p>
+        <a href="/new" class="btn btn-primary far fa-file"> 新規 </a>
+        <a href="/destroy/alldone" class="btn btn-danger fas fa-trash"
+            onclick="return confirm('完了済みの項目を全て削除します。よろしいですか？')"> 完了済みをすべて削除 </a>
+    </p>
+</div>
+{% endblock %}

@@ -24,3 +24,12 @@ services:
       - "80:80"
     environment:
       TZ: "Asia/Tokyo"
+
+  db:
+    build: ./mysql
+    container_name: fltest_db
+    volumes:
+      - ./mysql/mysql_data:/var/lib/mysql # データの永続化
+      - ./mysql/sql:/docker-entrypoint-initdb.d
+    environment:
+      - MYSQL_ROOT_PASSWORD=fltest
