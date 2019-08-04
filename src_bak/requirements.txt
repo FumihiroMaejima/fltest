@@ -1,0 +1,7 @@
+#Django==2.1.1
+#psycopg2
+#psycopg2-binary
+
+Flask==0.11.1
+#uwsgi==2.0.17
+#PyMySQL==0.8.0
