@@ -8,10 +8,14 @@ services:
     volumes:
       - ./app:/var/www/
     ports:
-      - "3031:3031"
+      - "${UWSGI_PORT}:${UWSGI_PORT}"
     tty: true
     environment:
       TZ: "Asia/Tokyo"
+      DB_USER: ${DB_USER}
+      DB_PASSWORD: ${DB_PASSWORD}
+      DB_HOST: ${DB_HOST}
+      DB_DATABASE: ${DB_DATABASE}
 
   nginx:
     build: ./nginx
