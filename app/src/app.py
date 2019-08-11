@@ -22,3 +22,8 @@ def create_app():
 
 
 app = create_app()
+
+@app.route("/")
+def hello():
+    from datetime import datetime
+    return "hello, " + datetime.now().strftime('%Y/%m/%d %H:%M:%S')
