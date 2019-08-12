@@ -28,15 +28,15 @@ def create_app():
 
 app = create_app()
 
-@app.route('/', methods=["GET"])
+@app.route('/test', methods=["GET"])
 def hello():
-    logMsg = "open index page."
+    logMsg = "open test index page."
     logger.warning(logMsg)
     from datetime import datetime
     return "hello, " + datetime.now().strftime('%Y/%m/%d %H:%M:%S')
 
-@app.route('/test', methods=["GET"])
-def indexTest():
+@app.route('/', methods=["GET"])
+def index():
     task = TaskModel.query.all()
 
     if not task:

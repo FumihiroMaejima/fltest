@@ -1,0 +1,22 @@
+{% extends "layout.html" %}
+{% block content %}
+<div class="container">
+    <form action="/update/{{ post.id }}" method="POST">
+        <div class="form-group">
+
+            <label for="title">ToDo</label><br>
+            <input type="text" name="title" value="{{ post.title }}" class="form-control">
+
+        </div>
+        <div class="form-group">
+
+            <label for="content">詳細</label><br>
+            <textarea name="content" cols="40" rows="10" class="form-control">{{ post.content }}</textarea>
+
+        </div>
+        <button type="submit" class="btn btn-primary">保存</button>
+        <button type="button" class="btn btn-danger" onclick="history.back()">キャンセル</button>
+
+    </form>
+</div>
+{% endblock %}
