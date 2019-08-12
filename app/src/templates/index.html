@@ -11,18 +11,18 @@
             <th></th>
             <th></th>
         </tr>
-        {% for post in posts %}
+        {% for task in allTask %}
         <div class="row">
             <tr>
-                <td>{{ post.date }}</td>
-                {% if post.commit == 1 %}
-                <td><del>{{ post.title }}</del></td>
+                <td>{{ task.date }}</td>
+                {% if task.commit == 1 %}
+                <td><del>{{ task.title }}</del></td>
                 {% else %}
-                <td>{{ post.title }}</td>
+                <td>{{ task.title }}</td>
                 {% endif %}
-                <td><a href="/show/{{ post.id }}" class="btn btn-success far fa-file-alt"> 詳細 </a></td>
-                <td><a href="/done/{{ post.id }}" class="btn btn-info fas fa-check-circle"> Done </a></td>
-                <td><a href="/undone/{{ post.id }}" class="btn btn-success fas fa-undo-alt"> Undone </a></td>
+                <td><a href="/show/{{ task.id }}" class="btn btn-success far fa-file-alt"> 詳細 </a></td>
+                <td><a href="/done/{{ task.id }}" class="btn btn-info fas fa-check-circle"> Done </a></td>
+                <td><a href="/undone/{{ task.id }}" class="btn btn-success fas fa-undo-alt"> Undone </a></td>
             </tr>
         </div>
         {% endfor %}

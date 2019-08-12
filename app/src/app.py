@@ -1,8 +1,10 @@
-from flask import Flask, jsonify
+from flask import Flask, jsonify, render_template
 
 from flask_restful import Api
 
 from log import logger
+
+from models.task import TaskModel, TaskSchema
 
 from database import init_db
 
@@ -26,9 +28,20 @@ def create_app():
 
 app = create_app()
 
-@app.route("/")
+@app.route('/', methods=["GET"])
 def hello():
-    logMsg = "index page."
+    logMsg = "open index page."
     logger.warning(logMsg)
     from datetime import datetime
     return "hello, " + datetime.now().strftime('%Y/%m/%d %H:%M:%S')
+
+@app.route('/test', methods=["GET"])
+def indexTest():
+    task = TaskModel.query.all()
+
+    if not task:
+      logMsg = "query data is none : data is %s."
+      logger.warning(logMsg, task)
+      #logMsg = "open todo page."
+      #logger.warning(logMsg)
+    return render_template("index.html", allTask = task)
