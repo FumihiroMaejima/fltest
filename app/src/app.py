@@ -2,10 +2,13 @@ from flask import Flask, jsonify
 
 from flask_restful import Api
 
+from log import logger
+
 from database import init_db
 
 from apis.hoge import HogeListAPI, HogeAPI
 
+#from taskExe import TaskExec
 
 def create_app():
 
@@ -25,5 +28,7 @@ app = create_app()
 
 @app.route("/")
 def hello():
+    logMsg = "index page."
+    logger.warning(logMsg)
     from datetime import datetime
     return "hello, " + datetime.now().strftime('%Y/%m/%d %H:%M:%S')
