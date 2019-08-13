@@ -26,9 +26,9 @@ class TaskModel(db.Model):
   updateTime = db.Column(db.DateTime, nullable=False,
                          default=datetime.now, onupdate=datetime.now)
 
-  def __init__(self, date, title):
-    self.date = date
-    self.title = title
+  #def __init__(self, date, title):
+  #  self.date = date
+  #  self.title = title
 
   #def __repr__(self):
   #  return '<TaskModel {}:{}>'.format(self.id, self.name)
