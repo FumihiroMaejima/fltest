@@ -63,7 +63,6 @@ def show(id):
 
 @app.route('/new', methods=["GET"])
 def new_task():
-
     return render_template("new.html")
 
 
@@ -76,6 +75,31 @@ def create_task():
     new_task.date = str(datetime.today().year) + "-" + str(datetime.today().month) + "-" + str(datetime.today().day)
     new_task.commit = 0
     db.session.add(new_task)
+    db.session.commit()
+
+    return redirect(url_for('.index'))
+
+@app.route('/edit/<int:id>', methods=["GET"])
+def edit_task(id):
+    task = TaskModel.query.get(id)
+
+    if not task:
+      logMsg = "in edit task page:query data is none : data is %s."
+      logger.warning(logMsg, task)
+
+    return render_template("edit.html", task=task)
+
+@app.route('/update/<int:id>', methods=["POST"])
+def update_task(id):
+    task = TaskModel.query.get(id)
+
+    if not task:
+      logMsg = "in update task execution:query data is none : data is %s."
+      logger.warning(logMsg, task)
+
+    task.title = request.form["title"]
+    task.content = request.form["content"]
+    task.date = str(datetime.today().year) + "-" + str(datetime.today().month) + "-" + str(datetime.today().day)
     db.session.commit()
 
     return redirect(url_for('.index'))
