@@ -23,10 +23,10 @@
     <br>
     <div>
         <a href="/edit/{{ task.id }}" class="btn btn-warning far fa-edit"> 編集 </a>
-        <a href="/destroy/{{ task.id }}" class="btn btn-danger fas fa-trash-alt"
+        <a href="/delete/{{ task.id }}" class="btn btn-danger fas fa-trash-alt"
             onclick="return confirm('この項目を削除します。よろしいですか？')"> 削除 </a>
-        <a href="/done/{{ task.id }}" class="btn btn-info fas fa-check-circle"> Done </a>
-        <a href="/undone/{{ task.id }}" class="btn btn-success fas fa-undo-alt"> Undone </a>
+        <a href="/complete/{{ task.id }}" class="btn btn-info fas fa-check-circle"> Done </a>
+        <a href="/incomplete/{{ task.id }}" class="btn btn-success fas fa-undo-alt"> Undone </a>
     </div>
 
     <br>

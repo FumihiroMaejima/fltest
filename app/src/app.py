@@ -32,12 +32,14 @@ def create_app():
 
 app = create_app()
 
+
 @app.route('/test', methods=["GET"])
 def hello():
     logMsg = "open test index page."
     logger.warning(logMsg)
     from datetime import datetime
     return "hello, " + datetime.now().strftime('%Y/%m/%d %H:%M:%S')
+
 
 @app.route('/', methods=["GET"])
 def index():
@@ -49,6 +51,7 @@ def index():
       #logMsg = "open todo page."
       #logger.warning(logMsg)
     return render_template("index.html", allTask=task)
+
 
 @app.route('/show/<int:id>', methods=["GET"])
 def show(id):
@@ -79,6 +82,7 @@ def create_task():
 
     return redirect(url_for('.index'))
 
+
 @app.route('/edit/<int:id>', methods=["GET"])
 def edit_task(id):
     task = TaskModel.query.get(id)
@@ -88,6 +92,7 @@ def edit_task(id):
       logger.warning(logMsg, task)
 
     return render_template("edit.html", task=task)
+
 
 @app.route('/update/<int:id>', methods=["POST"])
 def update_task(id):
@@ -104,32 +109,61 @@ def update_task(id):
 
     return redirect(url_for('.index'))
 
-@app.route('/done/<int:id>')
-def done_task(id):
+
+@app.route('/complete/<int:id>')
+def complete_task(id):
     task = TaskModel.query.get(id)
 
     if not task:
-      logMsg = "in done_task execution:query data is none : data is %s."
+      logMsg = "in complete_task execution:query data is none : data is %s."
       logger.warning(logMsg, task)
 
     task.commit = 1
     task.date = str(datetime.today().year) + "-" + str(datetime.today().month) + "-" + str(datetime.today().day)
     db.session.commit()
-    task = TaskModel.query.all()
 
     return redirect(url_for('.index'))
 
-@app.route('/undone/<int:id>')
-def undone_task(id):
+
+@app.route('/incomplete/<int:id>')
+def incomplete_task(id):
     task = TaskModel.query.get(id)
 
     if not task:
-      logMsg = "in undone_task execution:query data is none : data is %s."
+      logMsg = "in incomplete_task execution:query data is none : data is %s."
       logger.warning(logMsg, task)
 
     task.commit = 0
     task.date = str(datetime.today().year) + "-" + str(datetime.today().month) + "-" + str(datetime.today().day)
     db.session.commit()
-    task = TaskModel.query.all()
+
+    return redirect(url_for('.index'))
+
+
+@app.route('/delete/<int:id>')
+def delete(id):
+    task = TaskModel.query.get(id)
+
+    if not task:
+      logMsg = "in delete execution:query data is none : data is %s."
+      logger.warning(logMsg, task)
+
+    db.session.delete(task)
+    db.session.commit()
+
+    return redirect(url_for('.index'))
+
+
+@app.route('/delete/allcomplete')
+def delete_allcomplete():
+    complete_task = TaskModel.query.filter_by(commit=1).all()
+
+    if not complete_task:
+      logMsg = "in delete complete_task execution:query data is none : data is %s."
+      logger.warning(logMsg, complete_task)
+
+    for i in complete_task:
+      db.session.delete(i)
+      db.session.commit()
 
     return redirect(url_for('.index'))

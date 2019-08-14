@@ -21,15 +21,15 @@
                 <td>{{ task.title }}</td>
                 {% endif %}
                 <td><a href="/show/{{ task.id }}" class="btn btn-success far fa-file-alt"> 詳細 </a></td>
-                <td><a href="/done/{{ task.id }}" class="btn btn-info fas fa-check-circle"> Done </a></td>
-                <td><a href="/undone/{{ task.id }}" class="btn btn-success fas fa-undo-alt"> Undone </a></td>
+                <td><a href="/complete/{{ task.id }}" class="btn btn-info fas fa-check-circle"> 完了にする </a></td>
+                <td><a href="/incomplete/{{ task.id }}" class="btn btn-success fas fa-undo-alt"> 未完了にする </a></td>
             </tr>
         </div>
         {% endfor %}
     </table>
     <p>
         <a href="/new" class="btn btn-primary far fa-file"> 新規 </a>
-        <a href="/destroy/alldone" class="btn btn-danger fas fa-trash"
+        <a href="/delete/allcomplete" class="btn btn-danger fas fa-trash"
             onclick="return confirm('完了済みの項目を全て削除します。よろしいですか？')"> 完了済みをすべて削除 </a>
     </p>
 </div>
