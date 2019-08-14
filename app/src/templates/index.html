@@ -1,7 +1,7 @@
 {% extends "layout.html" %}
 {% block content %}
 <div class="container">
-    <h1>ToDo</h1>
+    <h1>ToDo List</h1>
 
     <table class="table table-hover table-responsive">
         <tr>
@@ -20,17 +20,20 @@
                 {% else %}
                 <td>{{ task.title }}</td>
                 {% endif %}
-                <td><a href="/show/{{ task.id }}" class="btn btn-success far fa-file-alt"> 詳細 </a></td>
-                <td><a href="/complete/{{ task.id }}" class="btn btn-info fas fa-check-circle"> 完了にする </a></td>
-                <td><a href="/incomplete/{{ task.id }}" class="btn btn-success fas fa-undo-alt"> 未完了にする </a></td>
+                <td><a href="/show/{{ task.id }}" class="btn btn-success far fa-file-alt">詳細</a></td>
+                <form action="/complete/{{ task.id }}" method="POST">
+                    <td><input type="submit" class="btn btn-info fas fa-check-circle" value="完了にする"></td>
+                </form>
+                <form action="/incomplete/{{ task.id }}" method="POST">
+                    <td><input type="submit" class="btn btn-success fas fa-undo-alt" value="未完了にする"></td>
+                </form>
             </tr>
         </div>
         {% endfor %}
     </table>
     <p>
-        <a href="/new" class="btn btn-primary far fa-file"> 新規作成 </a>
-        <a href="/delete/allcomplete" class="btn btn-danger fas fa-trash"
-            onclick="return confirm('完了済みの項目を全て削除します。よろしいですか？')"> 完了済みをすべて削除 </a>
+        <a href="/new" class="btn btn-primary far fa-file">新規作成</a>
+        <a href="/delete/allcomplete" class="btn btn-danger fas fa-trash" onclick="return confirm('完了済みの項目を全て削除します。よろしいですか？')">完了済みをすべて削除</a>
     </p>
 </div>
 {% endblock %}

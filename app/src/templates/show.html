@@ -21,16 +21,24 @@
     </div>
 
     <br>
-    <div>
-        <a href="/edit/{{ task.id }}" class="btn btn-warning far fa-edit"> 編集 </a>
-        <a href="/delete/{{ task.id }}" class="btn btn-danger fas fa-trash-alt"
-            onclick="return confirm('この項目を削除します。よろしいですか？')"> 削除 </a>
-        <a href="/complete/{{ task.id }}" class="btn btn-info fas fa-check-circle"> 完了にする </a>
-        <a href="/incomplete/{{ task.id }}" class="btn btn-success fas fa-undo-alt"> 未完了にする </a>
-    </div>
+    <table>
+        <tr>
+            <td><a href="/edit/{{ task.id }}" class="btn btn-warning far fa-edit">編集</a></td>
+            <td><a href="/delete/{{ task.id }}" class="btn btn-danger fas fa-trash-alt" onclick="return confirm('この項目を削除します。よろしいですか？')">削除</a></td>
+            <form action="/complete/{{ task.id }}" method="POST">
+                <td><input type="submit" class="btn btn-info fas fa-check-circle" value="完了にする"></td>
+            </form>
+            <form action="/incomplete/{{ task.id }}" method="POST">
+                <td><input type="submit" class="btn btn-success fas fa-undo-alt" value="未完了にする"></td>
+            </form>
+        </tr>
+    </table>
+
+
+
 
     <br>
-    <p><a href="/" class="btn btn-default">一覧に戻る</a></p>
+    <p><a href="/" class="btn btn-info">一覧に戻る</a></p>
 
 </div>
 {% endblock %}
