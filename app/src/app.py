@@ -52,6 +52,7 @@ def show(id):
     if not task:
       logMsg = "in show task page:query data is none : data is %s."
       logger.warning(logMsg, task)
+      return redirect(url_for('.index'))
 
     return render_template("show.html", task=task)
 
