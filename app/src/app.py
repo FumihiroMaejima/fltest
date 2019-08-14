@@ -103,3 +103,33 @@ def update_task(id):
     db.session.commit()
 
     return redirect(url_for('.index'))
+
+@app.route('/done/<int:id>')
+def done_task(id):
+    task = TaskModel.query.get(id)
+
+    if not task:
+      logMsg = "in done_task execution:query data is none : data is %s."
+      logger.warning(logMsg, task)
+
+    task.commit = 1
+    task.date = str(datetime.today().year) + "-" + str(datetime.today().month) + "-" + str(datetime.today().day)
+    db.session.commit()
+    task = TaskModel.query.all()
+
+    return redirect(url_for('.index'))
+
+@app.route('/undone/<int:id>')
+def undone_task(id):
+    task = TaskModel.query.get(id)
+
+    if not task:
+      logMsg = "in undone_task execution:query data is none : data is %s."
+      logger.warning(logMsg, task)
+
+    task.commit = 0
+    task.date = str(datetime.today().year) + "-" + str(datetime.today().month) + "-" + str(datetime.today().day)
+    db.session.commit()
+    task = TaskModel.query.all()
+
+    return redirect(url_for('.index'))
