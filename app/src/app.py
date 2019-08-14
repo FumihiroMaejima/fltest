@@ -65,9 +65,11 @@ def new_task():
 @app.route('/create', methods=["POST"])
 def create_task():
 
-    new_task = TaskModel()
-    new_task.title = request.form["title"]
-    new_task.content = request.form["content"]
+    req_title = request.form["title"]
+    req_content = request.form["content"]
+    new_task = TaskModel(req_title, req_content)
+    #new_task.title = request.form["title"]
+    #new_task.content = request.form["content"]
     new_task.date = str(datetime.today().year) + "-" + str(datetime.today().month) + "-" + str(datetime.today().day)
     new_task.commit = 0
     db.session.add(new_task)
