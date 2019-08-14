@@ -105,7 +105,7 @@ def update_task(id):
     return redirect(url_for('.index'))
 
 
-@app.route('/complete/<int:id>')
+@app.route('/complete/<int:id>', methods=["POST"])
 def complete_task(id):
     task = TaskModel.query.get(id)
 
@@ -120,7 +120,7 @@ def complete_task(id):
     return redirect(url_for('.index'))
 
 
-@app.route('/incomplete/<int:id>')
+@app.route('/incomplete/<int:id>', methods=["POST"])
 def incomplete_task(id):
     task = TaskModel.query.get(id)
 
