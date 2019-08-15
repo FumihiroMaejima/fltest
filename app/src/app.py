@@ -135,7 +135,7 @@ def incomplete_task(id):
     return redirect(url_for('.index'))
 
 
-@app.route('/delete/<int:id>')
+@app.route('/delete/<int:id>', methods=["POST"])
 def delete(id):
     task = TaskModel.query.get(id)
 
@@ -149,7 +149,7 @@ def delete(id):
     return redirect(url_for('.index'))
 
 
-@app.route('/delete/allcomplete')
+@app.route('/delete/allcomplete', methods=["POST"])
 def delete_allcomplete():
     complete_task = TaskModel.query.filter_by(commit=1).all()
 
