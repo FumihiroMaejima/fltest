@@ -54,12 +54,12 @@ def show(id):
       logger.warning(logMsg, task)
       return redirect(url_for('.index'))
 
-    return render_template("show.html", task=task)
+    return render_template("task/show.html", task=task)
 
 
 @app.route('/new', methods=["GET"])
 def new_task():
-    return render_template("new.html")
+    return render_template("task/new.html")
 
 
 @app.route('/create', methods=["POST"])
@@ -86,7 +86,7 @@ def edit_task(id):
       logMsg = "in edit task page:query data is none : data is %s."
       logger.warning(logMsg, task)
 
-    return render_template("edit.html", task=task)
+    return render_template("task/edit.html", task=task)
 
 
 @app.route('/update/<int:id>', methods=["POST"])
