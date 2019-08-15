@@ -74,6 +74,7 @@ def create_confirm():
 
     return render_template("task/create_confirm.html", task_title=task_title, task_content=task_content)
 
+
 @app.route('/create', methods=["POST"])
 def create_task():
 
@@ -99,6 +100,24 @@ def edit_task(id):
       logger.warning(logMsg, task)
 
     return render_template("task/edit.html", task=task)
+
+
+@app.route('/update_confirm/<int:id>', methods=["POST"])
+def update_confirm(id):
+    task = TaskModel.query.get(id)
+
+    if not task:
+      logMsg = "in update task execution:query data is none : data is %s."
+      logger.warning(logMsg, task)
+
+    task_title = request.form["title"]
+    task_content = request.form["content"]
+
+    if not task_title:
+      logMsg = "in create task confirm page:task title is none : task title is %s."
+      logger.warning(logMsg, task_title)
+
+    return render_template("task/update_confirm.html", task=task, task_title=task_title, task_content=task_content)
 
 
 @app.route('/update/<int:id>', methods=["POST"])

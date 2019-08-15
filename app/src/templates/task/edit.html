@@ -1,7 +1,7 @@
 {% extends "layout.html" %}
 {% block content %}
 <div class="container">
-    <form action="/update/{{ task.id }}" method="POST">
+    <form action="/update_confirm/{{ task.id }}" method="POST">
         <div class="form-group">
 
             <label for="title">ToDo</label><br>
@@ -14,9 +14,8 @@
             <textarea name="content" cols="40" rows="10" class="form-control">{{ task.content }}</textarea>
 
         </div>
-        <button type="submit" class="btn btn-primary">保存</button>
+        <button type="submit" class="btn btn-primary">確認</button>
         <button type="button" class="btn btn-danger" onclick="history.back()">キャンセル</button>
-
     </form>
 </div>
 {% endblock %}
