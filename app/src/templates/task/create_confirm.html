@@ -5,19 +5,20 @@
         <div class="form-group">
 
             <label for="title">ToDo</label>
-            <input type="text" name="title" value="" class="form-control" placeholder="登録したいタスクを入力してください。">
+            <div class="form-control">{{ task_title }}</div>
+            <input type="hidden" name="title" value="{{ task_title }}" >
 
         </div>
         <div class="form-group">
 
             <label for="content">備考</label>
-            <textarea class="form-control" name="content" cols="40" rows="10"
-                placeholder="詳細な情報を入力してください。"></textarea>
+            <div class="form-control">{{ task_content }}</div>
+            <input type="hidden" name="content" value="{{ task_content }}">
 
         </div>
 
-        <button type="submit" class="btn btn-primary">保存</button>
-        <a class="btn btn-danger" href="{{url_for('.index')}}">キャンセル</a>
+        <button type="submit" class="btn btn-primary">タスクの作成</button>
+        <a class="btn btn-danger" href="{{url_for('.new_task')}}">戻る</a>
 
     </form>
 </div>

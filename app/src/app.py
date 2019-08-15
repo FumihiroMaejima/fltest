@@ -62,6 +62,18 @@ def new_task():
     return render_template("task/new.html")
 
 
+@app.route('/create_confirm', methods=["POST"])
+def create_confirm():
+
+    task_title = request.form["title"]
+    task_content = request.form["content"]
+
+    if not task_title:
+      logMsg = "in create task confirm page:task title is none : task title is %s."
+      logger.warning(logMsg, task_title)
+
+    return render_template("task/create_confirm.html", task_title=task_title, task_content=task_content)
+
 @app.route('/create', methods=["POST"])
 def create_task():
 

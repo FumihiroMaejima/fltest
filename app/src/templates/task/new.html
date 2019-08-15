@@ -1,7 +1,7 @@
 {% extends "layout.html" %}
 {% block content %}
 <div class="container">
-    <form action="/create" method="POST">
+    <form action="/create_confirm" method="POST">
         <div class="form-group">
 
             <label for="title">ToDo</label>
@@ -16,7 +16,7 @@
 
         </div>
 
-        <button type="submit" class="btn btn-primary">保存</button>
+        <button type="submit" class="btn btn-primary">確認</button>
         <a class="btn btn-danger" href="{{url_for('.index')}}">キャンセル</a>
 
     </form>
