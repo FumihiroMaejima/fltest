@@ -64,9 +64,6 @@ def new_task():
 
     referer_page = request.headers.get("Referer")
     index_page = app.config['APP_URL'] + '/'
-    test = app.config['SECRET_KEY'] + 'key is here'
-    logger.warning(test)
-    logger.warning(index_page)
 
     if referer_page == index_page:
       session_title = ''
@@ -133,6 +130,16 @@ def edit_task(id):
       logMsg = "in edit task page:query data is none : data is %s."
       logger.warning(logMsg, task)
 
+    referer_page = request.headers.get("Referer")
+    detail_page = app.config['APP_URL'] + '/show/' + str(task.id)
+
+    if referer_page == detail_page:
+      session['edit_title'] = ''
+      session['edit_content'] = ''
+    elif 'edit_title' in session and 'edit_content' in session:
+      task.title = session.get('edit_title')
+      task.content = session.get('edit_content')
+
     return render_template("task/edit.html", task=task)
 
 
@@ -151,6 +158,13 @@ def update_confirm(id):
       logMsg = "in create task confirm page:task title is none : task title is %s."
       logger.warning(logMsg, task_title)
 
+    if 'edit_title' not in session and 'edit_content' not in session:
+      session['edit_title'] = ''
+      session['edit_content'] = ''
+    else:
+      session['edit_title'] = task_title
+      session['edit_content'] = task_content
+
     return render_template("task/update_confirm.html", task=task, task_title=task_title, task_content=task_content)
 
 
@@ -162,10 +176,22 @@ def update_task(id):
       logMsg = "in update task execution:query data is none : data is %s."
       logger.warning(logMsg, task)
 
-    task.title = request.form["title"]
-    task.content = request.form["content"]
+    session_title = session.get('edit_title')
+    session_content = session.get('edit_content')
+    post_title = request.form["title"]
+    post_content = request.form["content"]
+
+    if session_title != post_title or session_content != post_content:
+      logMsg = "in update task execution: input data is wrong : post data is %s."
+      logger.warning(logMsg, post_title)
+
+    task.title = post_title
+    task.content = post_content
     task.date = str(datetime.today().year) + "-" + str(datetime.today().month) + "-" + str(datetime.today().day)
     db.session.commit()
+
+    session.pop('edit_title', None)
+    session.pop('edit_content', None)
 
     return redirect(url_for('.index'))
 
