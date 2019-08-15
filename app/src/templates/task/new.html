@@ -5,14 +5,21 @@
         <div class="form-group">
 
             <label for="title">ToDo</label>
-            <input type="text" name="title" value="" class="form-control" placeholder="登録したいタスクを入力してください。">
+            {% if session_title == '' %}
+                <input type="text" name="title" value="" class="form-control" placeholder="登録したいタスクを入力してください。">
+            {% else %}
+                <input type="text" name="title" value="{{ session_title }}" class="form-control" placeholder="登録したいタスクを入力してください。">
+            {% endif %}
 
         </div>
         <div class="form-group">
 
             <label for="content">備考</label>
-            <textarea class="form-control" name="content" cols="40" rows="10"
-                placeholder="詳細な情報を入力してください。"></textarea>
+            {% if session_content == '' %}
+                <textarea class="form-control" name="content" cols="40" rows="10" placeholder="詳細な情報を入力してください。"></textarea>
+            {% else %}
+                <textarea class="form-control" name="content" cols="40" rows="10" placeholder="詳細な情報を入力してください。">{{ session_content }}</textarea>
+            {% endif %}
 
         </div>
 

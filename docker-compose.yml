@@ -12,6 +12,7 @@ services:
     tty: true
     environment:
       TZ: "Asia/Tokyo"
+      APP_URL: ${APP_URL}
       DB_USER: ${DB_USER}
       DB_PASSWORD: ${DB_PASSWORD}
       DB_HOST: ${DB_HOST}

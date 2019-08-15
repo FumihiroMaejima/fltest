@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request, redirect, url_for
+from flask import Flask, render_template, request, redirect, url_for, session
 
 from datetime import datetime
 
@@ -23,6 +23,8 @@ def create_app():
 
 
 app = create_app()
+
+app.secret_key = app.config['SECRET_KEY']
 
 
 @app.route('/test', methods=["GET"])
@@ -59,7 +61,23 @@ def show(id):
 
 @app.route('/new', methods=["GET"])
 def new_task():
-    return render_template("task/new.html")
+
+    referer_page = request.headers.get("Referer")
+    index_page = app.config['APP_URL'] + '/'
+    test = app.config['SECRET_KEY'] + 'key is here'
+    logger.warning(test)
+    logger.warning(index_page)
+
+    if referer_page == index_page:
+      session_title = ''
+      session_content = ''
+      session['title'] = ''
+      session['content'] = ''
+    elif 'title' in session and 'content' in session:
+      session_title = session.get('title')
+      session_content = session.get('content')
+
+    return render_template("task/new.html", session_title=session_title, session_content=session_content)
 
 
 @app.route('/create_confirm', methods=["POST"])
@@ -72,21 +90,37 @@ def create_confirm():
       logMsg = "in create task confirm page:task title is none : task title is %s."
       logger.warning(logMsg, task_title)
 
+    if 'title' not in session and 'content' not in session:
+      session['title'] = ''
+      session['content'] = ''
+    else:
+      session['title'] = task_title
+      session['content'] = task_content
+
     return render_template("task/create_confirm.html", task_title=task_title, task_content=task_content)
 
 
 @app.route('/create', methods=["POST"])
 def create_task():
+    session_title = session.get('title')
+    session_content = session.get('content')
 
-    req_title = request.form["title"]
-    req_content = request.form["content"]
-    new_task = TaskModel(req_title, req_content)
+    post_title = request.form["title"]
+    post_content = request.form["content"]
+    if session_title != post_title or session_content != post_content:
+      logMsg = "in create task execution: input data is wrong : post data is %s."
+      logger.warning(logMsg, post_title)
+
+    new_task = TaskModel(session_title, session_content)
     #new_task.title = request.form["title"]
     #new_task.content = request.form["content"]
     new_task.date = str(datetime.today().year) + "-" + str(datetime.today().month) + "-" + str(datetime.today().day)
     new_task.commit = 0
     db.session.add(new_task)
     db.session.commit()
+
+    session.pop('title', None)
+    session.pop('content', None)
 
     return redirect(url_for('.index'))
 
