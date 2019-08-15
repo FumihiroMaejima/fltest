@@ -13,13 +13,13 @@
         </tr>
         {% for task in allTask %}
         <div class="row">
+            {% if task.commit == 1 %}
+            <tr style="background-color:#a9a9a9;">
+            {% else %}
             <tr>
+            {% endif %}
                 <td>{{ task.date }}</td>
-                {% if task.commit == 1 %}
-                <td><del>{{ task.title }}</del></td>
-                {% else %}
                 <td>{{ task.title }}</td>
-                {% endif %}
                 <td><a href="/show/{{ task.id }}" class="btn btn-success far fa-file-alt">詳細</a></td>
                 <form action="/complete/{{ task.id }}" method="POST">
                     <td><input type="submit" class="btn btn-info fas fa-check-circle" value="完了にする"></td>
