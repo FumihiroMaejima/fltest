@@ -78,7 +78,6 @@ def show(id):
     if not task:
       logMsg = "in show task page:query data is none : data is %s."
       logger.warning(logMsg, task)
-      #return redirect(url_for('.index'))
       abort(404)
 
     return render_template("task/show.html", task=task)
@@ -98,6 +97,8 @@ def new_task():
     elif 'title' in session and 'content' in session:
       session_title = session.get('title')
       session_content = session.get('content')
+    else:
+        abort(400)
 
     return render_template("task/new.html", session_title=session_title, session_content=session_content)
 
@@ -111,10 +112,10 @@ def create_confirm():
     if not task_title:
       logMsg = "in create task confirm page:task title is none : task title is %s."
       logger.warning(logMsg, task_title)
+      abort(400)
 
     if 'title' not in session and 'content' not in session:
-      session['title'] = ''
-      session['content'] = ''
+      abort(400)
     else:
       session['title'] = task_title
       session['content'] = task_content
@@ -132,6 +133,7 @@ def create_task():
     if session_title != post_title or session_content != post_content:
       logMsg = "in create task execution: input data is wrong : post data is %s."
       logger.warning(logMsg, post_title)
+      abort(400)
 
     new_task = TaskModel(session_title, session_content)
     #new_task.title = request.form["title"]
@@ -154,6 +156,7 @@ def edit_task(id):
     if not task:
       logMsg = "in edit task page:query data is none : data is %s."
       logger.warning(logMsg, task)
+      abort(404)
 
     referer_page = request.headers.get("Referer")
     detail_page = app.config['APP_URL'] + '/show/' + str(task.id)
@@ -164,6 +167,8 @@ def edit_task(id):
     elif 'edit_title' in session and 'edit_content' in session:
       task.title = session.get('edit_title')
       task.content = session.get('edit_content')
+    else :
+        abort(400)
 
     return render_template("task/edit.html", task=task)
 
@@ -175,6 +180,7 @@ def update_confirm(id):
     if not task:
       logMsg = "in update task execution:query data is none : data is %s."
       logger.warning(logMsg, task)
+      abort(400)
 
     task_title = request.form["title"]
     task_content = request.form["content"]
@@ -182,10 +188,10 @@ def update_confirm(id):
     if not task_title:
       logMsg = "in create task confirm page:task title is none : task title is %s."
       logger.warning(logMsg, task_title)
+      abort(400)
 
     if 'edit_title' not in session and 'edit_content' not in session:
-      session['edit_title'] = ''
-      session['edit_content'] = ''
+        abort(400)
     else:
       session['edit_title'] = task_title
       session['edit_content'] = task_content
@@ -200,6 +206,7 @@ def update_task(id):
     if not task:
       logMsg = "in update task execution:query data is none : data is %s."
       logger.warning(logMsg, task)
+      abort(400)
 
     session_title = session.get('edit_title')
     session_content = session.get('edit_content')
@@ -209,6 +216,7 @@ def update_task(id):
     if session_title != post_title or session_content != post_content:
       logMsg = "in update task execution: input data is wrong : post data is %s."
       logger.warning(logMsg, post_title)
+      abort(400)
 
     task.title = post_title
     task.content = post_content
@@ -228,6 +236,7 @@ def complete_task(id):
     if not task:
       logMsg = "in complete_task execution:query data is none : data is %s."
       logger.warning(logMsg, task)
+      abort(400)
 
     task.commit = 1
     task.date = str(datetime.today().year) + "-" + str(datetime.today().month) + "-" + str(datetime.today().day)
@@ -243,6 +252,7 @@ def incomplete_task(id):
     if not task:
       logMsg = "in incomplete_task execution:query data is none : data is %s."
       logger.warning(logMsg, task)
+      abort(400)
 
     task.commit = 0
     task.date = str(datetime.today().year) + "-" + str(datetime.today().month) + "-" + str(datetime.today().day)
@@ -258,6 +268,7 @@ def delete(id):
     if not task:
       logMsg = "in delete execution:query data is none : data is %s."
       logger.warning(logMsg, task)
+      abort(400)
 
     db.session.delete(task)
     db.session.commit()
@@ -272,6 +283,7 @@ def delete_allcomplete():
     if not complete_task:
       logMsg = "in delete complete_task execution:query data is none : data is %s."
       logger.warning(logMsg, complete_task)
+      abort(400)
 
     for i in complete_task:
       db.session.delete(i)
