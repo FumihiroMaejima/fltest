@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request, redirect, url_for, session
+from flask import Flask, render_template, request, redirect, url_for, session, abort
 
 from datetime import datetime
 
@@ -25,6 +25,30 @@ def create_app():
 app = create_app()
 
 app.secret_key = app.config['SECRET_KEY']
+
+
+# error handling start
+def user_bad_request(error):
+    return render_template('errors/400.html'), 400
+
+
+def user_request_forbidden(error):
+    return render_template('errors/403.html'), 403
+
+
+def page_not_found(error):
+    return render_template('errors/404.html'), 404
+
+
+def request_method_not_allowed(error):
+    return render_template('errors/405.html'), 405
+
+
+app.register_error_handler(400, user_bad_request)
+app.register_error_handler(403, user_request_forbidden)
+app.register_error_handler(404, page_not_found)
+app.register_error_handler(405, request_method_not_allowed)
+# error handling end
 
 
 @app.route('/test', methods=["GET"])
@@ -54,7 +78,8 @@ def show(id):
     if not task:
       logMsg = "in show task page:query data is none : data is %s."
       logger.warning(logMsg, task)
-      return redirect(url_for('.index'))
+      #return redirect(url_for('.index'))
+      abort(404)
 
     return render_template("task/show.html", task=task)
 
