@@ -135,18 +135,27 @@ def create_task():
       logger.warning(logMsg, post_title)
       abort(400)
 
-    new_task = TaskModel(session_title, session_content)
-    #new_task.title = request.form["title"]
-    #new_task.content = request.form["content"]
-    new_task.date = str(datetime.today().year) + "-" + str(datetime.today().month) + "-" + str(datetime.today().day)
-    new_task.commit = 0
-    db.session.add(new_task)
-    db.session.commit()
+    try:
+      new_task = TaskModel(session_title, session_content)
+      #new_task.title = request.form["title"]
+      #new_task.content = request.form["content"]
+      new_task.date = str(datetime.today().year) + "-" + str(datetime.today().month) + "-" + str(datetime.today().day)
+      new_task.commit = 0
+      db.session.add(new_task)
+      db.session.commit()
 
-    session.pop('title', None)
-    session.pop('content', None)
+      session.pop('title', None)
+      session.pop('content', None)
 
-    return redirect(url_for('.index'))
+      return redirect(url_for('.index'))
+    except:
+      db.session.rollback()
+
+      logMsg = "in crate task execution: crate execution is failed. please return index page."
+      logger.warning(logMsg, logMsg)
+      session.pop('title', None)
+      session.pop('content', None)
+      abort(400)
 
 
 @app.route('/edit/<int:id>', methods=["GET"])
@@ -176,12 +185,12 @@ def edit_task(id):
 
 @app.route('/update_confirm/', methods=["POST"])
 def update_confirm():
-    task_id = request.form["task_id"]
+    post_task_id = request.form["task_id"]
     task_title = request.form["title"]
     task_content = request.form["content"]
     session_task_id = session.get('edit_task_id')
 
-    task = TaskModel.query.get(task_id)
+    task = TaskModel.query.get(post_task_id)
 
     if not task:
       logMsg = "in update task confirm execution:query data is none : data is %s."
@@ -193,9 +202,9 @@ def update_confirm():
       logger.warning(logMsg, task_title)
       abort(400)
 
-    if task_id != str(session_task_id):
-      logMsg = "in update task confirm execution:post data is wrong : request task_id is %s."
-      logger.warning(logMsg, task_id)
+    if post_task_id != str(session_task_id):
+      logMsg = "in update task confirm execution:post data is wrong : request post_task_id is %s."
+      logger.warning(logMsg, post_task_id)
       abort(400)
 
     if 'edit_task_id' not in session or 'edit_title' not in session or 'edit_content' not in session:
@@ -212,20 +221,20 @@ def update_task():
     session_task_id = session.get('edit_task_id')
     session_title = session.get('edit_title')
     session_content = session.get('edit_content')
-    task_id = request.form["task_id"]
+    post_task_id = request.form["task_id"]
     post_title = request.form["title"]
     post_content = request.form["content"]
 
-    task = TaskModel.query.get(task_id)
+    task = TaskModel.query.get(post_task_id)
 
     if not task:
       logMsg = "in update task execution:query data is none : data is %s."
       logger.warning(logMsg, task)
       abort(400)
 
-    if task_id != str(session_task_id):
-      logMsg = "in update task execution:post data is wrong : request task_id  is %s."
-      logger.warning(logMsg, task_id)
+    if post_task_id != str(session_task_id):
+      logMsg = "in update task execution:post data is wrong : request post_task_id  is %s."
+      logger.warning(logMsg, post_task_id)
       abort(400)
 
     if session_title != post_title or session_content != post_content:
@@ -254,7 +263,6 @@ def update_task():
       session.pop('edit_title', None)
       session.pop('edit_content', None)
       abort(400)
-
 
 
 @app.route('/complete/<int:id>', methods=["POST"])
