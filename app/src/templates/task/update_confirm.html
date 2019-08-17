@@ -1,12 +1,13 @@
 {% extends "layout.html" %}
 {% block content %}
 <div class="container">
-    <form action="/update/{{ task.id }}" method="POST">
+    <form action="/update/" method="POST">
         <div class="form-group">
 
             <label for="title">ToDo</label>
             <div class="form-control">{{ task_title }}</div>
             <input type="hidden" name="title" value="{{ task_title }}" >
+            <input type="hidden" name="task_id" value="{{ task_id }}" class="form-control">
 
         </div>
         <div class="form-group">
@@ -18,7 +19,7 @@
         </div>
 
         <button type="submit" class="btn btn-primary">タスクの更新</button>
-        <a class="btn btn-danger" href="../edit/{{task.id}}">戻る</a>
+        <a class="btn btn-danger" href="../edit/{{task_id}}">戻る</a>
 
     </form>
 </div>

@@ -162,9 +162,10 @@ def edit_task(id):
     detail_page = app.config['APP_URL'] + '/show/' + str(task.id)
 
     if referer_page == detail_page:
+      session['edit_task_id'] = task.id
       session['edit_title'] = ''
       session['edit_content'] = ''
-    elif 'edit_title' in session and 'edit_content' in session:
+    elif 'edit_task_id' in session and 'edit_title' in session and 'edit_content' in session:
       task.title = session.get('edit_title')
       task.content = session.get('edit_content')
     else :
@@ -173,60 +174,87 @@ def edit_task(id):
     return render_template("task/edit.html", task=task)
 
 
-@app.route('/update_confirm/<int:id>', methods=["POST"])
-def update_confirm(id):
-    task = TaskModel.query.get(id)
+@app.route('/update_confirm/', methods=["POST"])
+def update_confirm():
+    task_id = request.form["task_id"]
+    task_title = request.form["title"]
+    task_content = request.form["content"]
+    session_task_id = session.get('edit_task_id')
+
+    task = TaskModel.query.get(task_id)
 
     if not task:
-      logMsg = "in update task execution:query data is none : data is %s."
+      logMsg = "in update task confirm execution:query data is none : data is %s."
       logger.warning(logMsg, task)
       abort(400)
 
-    task_title = request.form["title"]
-    task_content = request.form["content"]
-
     if not task_title:
-      logMsg = "in create task confirm page:task title is none : task title is %s."
+      logMsg = "in update task confirm execution:task title is none : task title is %s."
       logger.warning(logMsg, task_title)
       abort(400)
 
-    if 'edit_title' not in session and 'edit_content' not in session:
+    if task_id != str(session_task_id):
+      logMsg = "in update task confirm execution:post data is wrong : request task_id is %s."
+      logger.warning(logMsg, task_id)
+      abort(400)
+
+    if 'edit_task_id' not in session or 'edit_title' not in session or 'edit_content' not in session:
         abort(400)
     else:
       session['edit_title'] = task_title
       session['edit_content'] = task_content
 
-    return render_template("task/update_confirm.html", task=task, task_title=task_title, task_content=task_content)
+    return render_template("task/update_confirm.html", task_id=session_task_id, task_title=task_title, task_content=task_content)
 
 
-@app.route('/update/<int:id>', methods=["POST"])
-def update_task(id):
-    task = TaskModel.query.get(id)
+@app.route('/update/', methods=["POST"])
+def update_task():
+    session_task_id = session.get('edit_task_id')
+    session_title = session.get('edit_title')
+    session_content = session.get('edit_content')
+    task_id = request.form["task_id"]
+    post_title = request.form["title"]
+    post_content = request.form["content"]
+
+    task = TaskModel.query.get(task_id)
 
     if not task:
       logMsg = "in update task execution:query data is none : data is %s."
       logger.warning(logMsg, task)
       abort(400)
 
-    session_title = session.get('edit_title')
-    session_content = session.get('edit_content')
-    post_title = request.form["title"]
-    post_content = request.form["content"]
+    if task_id != str(session_task_id):
+      logMsg = "in update task execution:post data is wrong : request task_id  is %s."
+      logger.warning(logMsg, task_id)
+      abort(400)
 
     if session_title != post_title or session_content != post_content:
       logMsg = "in update task execution: input data is wrong : post data is %s."
       logger.warning(logMsg, post_title)
       abort(400)
 
-    task.title = post_title
-    task.content = post_content
-    task.date = str(datetime.today().year) + "-" + str(datetime.today().month) + "-" + str(datetime.today().day)
-    db.session.commit()
+    try:
+      task.title = post_title
+      task.content = post_content
+      task.date = str(datetime.today().year) + "-" + str(datetime.today().month) + "-" + str(datetime.today().day)
+      db.session.commit()
 
-    session.pop('edit_title', None)
-    session.pop('edit_content', None)
+      session.pop('edit_task_id', None)
+      session.pop('edit_title', None)
+      session.pop('edit_content', None)
 
-    return redirect(url_for('.index'))
+      return redirect(url_for('.index'))
+    except:
+      db.session.rollback()
+
+      logMsg = "in update task execution: update execution is failed. please return index page."
+      logger.warning(logMsg, logMsg)
+
+      session.pop('edit_task_id', None)
+      session.pop('edit_title', None)
+      session.pop('edit_content', None)
+      abort(400)
+
 
 
 @app.route('/complete/<int:id>', methods=["POST"])
