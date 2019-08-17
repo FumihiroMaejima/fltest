@@ -52,6 +52,10 @@ main {
     font-weight: 300;
 }
 
+.btn {
+    white-space: nowrap;
+}
+
 /* 画面サイズごとの設定 */
 /* 479px以下 */
 @media screen and (max-width: 479px) {
