@@ -152,7 +152,7 @@ def create_task():
       db.session.rollback()
 
       logMsg = "in crate task execution: crate execution is failed. please return index page."
-      logger.warning(logMsg, logMsg)
+      logger.warning(logMsg)
       session.pop('title', None)
       session.pop('content', None)
       abort(400)
@@ -257,7 +257,7 @@ def update_task():
       db.session.rollback()
 
       logMsg = "in update task execution: update execution is failed. please return index page."
-      logger.warning(logMsg, logMsg)
+      logger.warning(logMsg)
 
       session.pop('edit_task_id', None)
       session.pop('edit_title', None)
@@ -274,11 +274,18 @@ def complete_task(id):
       logger.warning(logMsg, task)
       abort(400)
 
-    task.commit = 1
-    task.date = str(datetime.today().year) + "-" + str(datetime.today().month) + "-" + str(datetime.today().day)
-    db.session.commit()
+    try:
+      task.commit = 1
+      task.date = str(datetime.today().year) + "-" + str(datetime.today().month) + "-" + str(datetime.today().day)
+      db.session.commit()
 
-    return redirect(url_for('.index'))
+      return redirect(url_for('.index'))
+    except:
+      db.session.rollback()
+
+      logMsg = "in complete task execution: complete execution is failed. please return index page."
+      logger.warning(logMsg)
+      abort(400)
 
 
 @app.route('/incomplete/<int:id>', methods=["POST"])
@@ -290,11 +297,19 @@ def incomplete_task(id):
       logger.warning(logMsg, task)
       abort(400)
 
-    task.commit = 0
-    task.date = str(datetime.today().year) + "-" + str(datetime.today().month) + "-" + str(datetime.today().day)
-    db.session.commit()
+    try:
+      task.commit = 0
+      task.date = str(datetime.today().year) + "-" + \
+          str(datetime.today().month) + "-" + str(datetime.today().day)
+      db.session.commit()
 
-    return redirect(url_for('.index'))
+      return redirect(url_for('.index'))
+    except:
+      db.session.rollback()
+
+      logMsg = "in incomplete task execution: incomplete execution is failed. please return index page."
+      logger.warning(logMsg)
+      abort(400)
 
 
 @app.route('/delete/<int:id>', methods=["POST"])
