@@ -321,10 +321,17 @@ def delete(id):
       logger.warning(logMsg, task)
       abort(400)
 
-    db.session.delete(task)
-    db.session.commit()
+    try:
+      db.session.delete(task)
+      db.session.commit()
 
-    return redirect(url_for('.index'))
+      return redirect(url_for('.index'))
+    except:
+      db.session.rollback()
+
+      logMsg = "in delete task execution: delete execution is failed. please return index page."
+      logger.warning(logMsg)
+      abort(400)
 
 
 @app.route('/delete/allcomplete', methods=["POST"])
@@ -336,8 +343,15 @@ def delete_allcomplete():
       logger.warning(logMsg, complete_task)
       abort(400)
 
-    for i in complete_task:
-      db.session.delete(i)
+    try:
+      for i in complete_task:
+        db.session.delete(i)
       db.session.commit()
 
-    return redirect(url_for('.index'))
+      return redirect(url_for('.index'))
+    except:
+      db.session.rollback()
+
+      logMsg = "in delete allcomplete task execution: delete allcomplete execution is failed. please return index page."
+      logger.warning(logMsg)
+      abort(400)
