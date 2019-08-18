@@ -53,6 +53,22 @@ app.register_error_handler(405, request_method_not_allowed)
 # error handling end
 
 
+def delete_create_session():
+    if 'title' in session:
+      session.pop('title', None)
+    if 'content' in session:
+      session.pop('content', None)
+
+
+def delete_edit_session():
+      if 'edit_task_id' in session:
+        session.pop('edit_task_id', None)
+      if 'edit_title' in session:
+        session.pop('edit_title', None)
+      if 'edit_content' in session:
+        session.pop('edit_content', None)
+
+
 @app.route('/test', methods=["GET"])
 def hello():
     logMsg = "open test index page."
@@ -63,6 +79,9 @@ def hello():
 
 @app.route('/', methods=["GET"])
 def index():
+    delete_create_session()
+    delete_edit_session()
+
     task = TaskModel.query.all()
 
     if not task:
@@ -146,8 +165,7 @@ def create_task():
       db.session.add(new_task)
       db.session.commit()
 
-      session.pop('title', None)
-      session.pop('content', None)
+      delete_create_session()
 
       return redirect(url_for('.index'))
     except:
@@ -155,8 +173,7 @@ def create_task():
 
       logMsg = "in crate task execution: crate execution is failed. please return index page."
       logger.warning(logMsg)
-      session.pop('title', None)
-      session.pop('content', None)
+      delete_create_session()
       abort(400)
 
 
@@ -250,9 +267,7 @@ def update_task():
       task.date = str(datetime.today().year) + "-" + str(datetime.today().month) + "-" + str(datetime.today().day)
       db.session.commit()
 
-      session.pop('edit_task_id', None)
-      session.pop('edit_title', None)
-      session.pop('edit_content', None)
+      delete_edit_session()
 
       return redirect(url_for('.index'))
     except:
@@ -261,9 +276,7 @@ def update_task():
       logMsg = "in update task execution: update execution is failed. please return index page."
       logger.warning(logMsg)
 
-      session.pop('edit_task_id', None)
-      session.pop('edit_title', None)
-      session.pop('edit_content', None)
+      delete_edit_session()
       abort(400)
 
 
