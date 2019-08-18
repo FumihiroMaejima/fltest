@@ -26,7 +26,8 @@ app = create_app()
 
 app.secret_key = app.config['SECRET_KEY']
 
-#app.config.update(SESSION_COOKIE_SECURE=True, SESSION_COOKIE_HTTPONLY=True, SESSION_COOKIE_SAMESITE='Lax')
+if app.config['ENV'] == 'production':
+    app.config.update(SESSION_COOKIE_SECURE=True, SESSION_COOKIE_HTTPONLY=True, SESSION_COOKIE_SAMESITE='Lax')
 
 # error handling start
 def user_bad_request(error):
