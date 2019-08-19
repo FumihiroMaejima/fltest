@@ -22,6 +22,11 @@
             {% endif %}
 
         </div>
+        {% if create_session_token == '' %}
+            <input type="hidden" name="create_csrf_token" value="{{ csrf_token() }}" />
+        {% else %}
+            <input type="hidden" name="create_csrf_token" value="{{ create_session_token }}" />
+        {% endif %}
 
         <button type="submit" class="btn btn-primary">確認</button>
         <a class="btn btn-danger" href="{{url_for('.index')}}">キャンセル</a>

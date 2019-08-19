@@ -16,6 +16,7 @@
             <input type="hidden" name="content" value="{{ task_content }}">
 
         </div>
+        <input type="hidden" name="create_csrf_token" value="{{ create_session_token }}" />
 
         <button type="submit" class="btn btn-success">タスクの作成</button>
         <a class="btn btn-danger" href="{{url_for('.new_task')}}">戻る</a>

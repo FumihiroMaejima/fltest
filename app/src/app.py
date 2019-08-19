@@ -2,6 +2,10 @@ from flask import Flask, render_template, request, redirect, url_for, session, a
 
 from datetime import datetime
 
+from flask_wtf import FlaskForm
+
+from flask_wtf.csrf import CSRFProtect, CSRFError
+
 from log import logger
 
 from models.task import TaskModel, TaskSchema
@@ -25,6 +29,8 @@ def create_app():
 app = create_app()
 
 app.secret_key = app.config['SECRET_KEY']
+
+csrf = CSRFProtect(app)
 
 if app.config['ENV'] == 'production':
     app.config.update(SESSION_COOKIE_SECURE=True, SESSION_COOKIE_HTTPONLY=True, SESSION_COOKIE_SAMESITE='Lax')
@@ -58,6 +64,8 @@ def delete_create_session():
       session.pop('title', None)
     if 'content' in session:
       session.pop('content', None)
+    if 'create_csrf_token' in session:
+        session.pop('create_csrf_token', None)
 
 
 def delete_edit_session():
@@ -113,15 +121,18 @@ def new_task():
     if referer_page == index_page:
       session_title = ''
       session_content = ''
+      create_session_token = ''
       session['title'] = ''
       session['content'] = ''
-    elif 'title' in session and 'content' in session:
+      session['create_csrf_token'] = ''
+    elif 'title' in session and 'content' in session and 'create_csrf_token' in session:
       session_title = session.get('title')
       session_content = session.get('content')
+      create_session_token = session.get('create_csrf_token')
     else:
         abort(400)
 
-    return render_template("task/new.html", session_title=session_title, session_content=session_content)
+    return render_template("task/new.html", session_title=session_title, session_content=session_content, create_session_token=create_session_token)
 
 
 @app.route('/create_confirm', methods=["POST"])
@@ -129,6 +140,7 @@ def create_confirm():
 
     task_title = request.form["title"]
     task_content = request.form["content"]
+    create_session_token = request.form["create_csrf_token"]
 
     if not task_title:
       logMsg = "in create task confirm page:task title is none : task title is %s."
@@ -140,17 +152,25 @@ def create_confirm():
     else:
       session['title'] = task_title
       session['content'] = task_content
+      session['create_csrf_token'] = create_session_token
 
-    return render_template("task/create_confirm.html", task_title=task_title, task_content=task_content)
+    return render_template("task/create_confirm.html", task_title=task_title, task_content=task_content, create_session_token=create_session_token)
 
 
 @app.route('/create', methods=["POST"])
 def create_task():
     session_title = session.get('title')
     session_content = session.get('content')
+    session_token = session.get('create_csrf_token')
 
     post_title = request.form["title"]
     post_content = request.form["content"]
+    create_csrf_token = request.form["create_csrf_token"]
+
+    if create_csrf_token != session_token:
+      logger.warning('create csrf_token is %s ', create_csrf_token)
+      abort(400)
+
     if session_title != post_title or session_content != post_content:
       logMsg = "in create task execution: input data is wrong : post data is %s."
       logger.warning(logMsg, post_title)
