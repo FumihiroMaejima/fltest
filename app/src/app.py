@@ -69,12 +69,14 @@ def delete_create_session():
 
 
 def delete_edit_session():
-      if 'edit_task_id' in session:
-        session.pop('edit_task_id', None)
-      if 'edit_title' in session:
-        session.pop('edit_title', None)
-      if 'edit_content' in session:
-        session.pop('edit_content', None)
+    if 'edit_task_id' in session:
+      session.pop('edit_task_id', None)
+    if 'edit_title' in session:
+      session.pop('edit_title', None)
+    if 'edit_content' in session:
+      session.pop('edit_content', None)
+    if 'edit_csrf_token' in session:
+        session.pop('edit_csrf_token', None)
 
 
 @app.route('/test', methods=["GET"])
@@ -213,13 +215,20 @@ def edit_task(id):
       session['edit_task_id'] = task.id
       session['edit_title'] = ''
       session['edit_content'] = ''
-    elif 'edit_task_id' in session and 'edit_title' in session and 'edit_content' in session:
+      session['edit_csrf_token'] = ''
+      edit_session_token = ''
+    elif 'edit_task_id' in session and 'edit_title' in session and 'edit_content' in session and 'edit_csrf_token' in session:
+      if task.id != session.get('edit_task_id'):
+       logMsg = "in edit task page: id is wrong : query id is %s."
+       logger.warning(logMsg, task.id)
+       abort(400)
       task.title = session.get('edit_title')
       task.content = session.get('edit_content')
+      edit_session_token = session.get('edit_csrf_token')
     else :
         abort(400)
 
-    return render_template("task/edit.html", task=task)
+    return render_template("task/edit.html", task=task, edit_session_token=edit_session_token)
 
 
 @app.route('/update_confirm/', methods=["POST"])
@@ -227,6 +236,7 @@ def update_confirm():
     post_task_id = request.form["task_id"]
     task_title = request.form["title"]
     task_content = request.form["content"]
+    edit_session_token = request.form["edit_csrf_token"]
     session_task_id = session.get('edit_task_id')
 
     task = TaskModel.query.get(post_task_id)
@@ -251,8 +261,9 @@ def update_confirm():
     else:
       session['edit_title'] = task_title
       session['edit_content'] = task_content
+      session['edit_csrf_token'] = edit_session_token
 
-    return render_template("task/update_confirm.html", task_id=session_task_id, task_title=task_title, task_content=task_content)
+    return render_template("task/update_confirm.html", task_id=session_task_id, task_title=task_title, task_content=task_content, edit_session_token=edit_session_token)
 
 
 @app.route('/update/', methods=["POST"])
@@ -260,9 +271,15 @@ def update_task():
     session_task_id = session.get('edit_task_id')
     session_title = session.get('edit_title')
     session_content = session.get('edit_content')
+    session_token = session.get('edit_csrf_token')
     post_task_id = request.form["task_id"]
     post_title = request.form["title"]
     post_content = request.form["content"]
+    edit_csrf_token = request.form["edit_csrf_token"]
+
+    if edit_csrf_token != session_token:
+      logger.warning('edit csrf_token is %s ', edit_csrf_token)
+      abort(400)
 
     task = TaskModel.query.get(post_task_id)
 

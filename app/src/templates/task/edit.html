@@ -15,6 +15,12 @@
             <textarea name="content" cols="40" rows="10" class="form-control">{{ task.content }}</textarea>
 
         </div>
+        {% if edit_session_token == '' %}
+            <input type="hidden" name="edit_csrf_token" value="{{ csrf_token() }}" />
+        {% else %}
+            <input type="hidden" name="edit_csrf_token" value="{{ edit_session_token }}" />
+        {% endif %}
+
         <button type="submit" class="btn btn-primary">確認</button>
         <a class="btn btn-danger" href="../show/{{task.id}}">キャンセル</a>
     </form>

@@ -17,6 +17,7 @@
             <input type="hidden" name="content" value="{{ task_content }}">
 
         </div>
+        <input type="hidden" name="edit_csrf_token" value="{{ edit_session_token }}" />
 
         <button type="submit" class="btn btn-success">タスクの更新</button>
         <a class="btn btn-danger" href="../edit/{{task_id}}">戻る</a>
