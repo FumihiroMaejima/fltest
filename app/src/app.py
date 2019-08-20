@@ -380,6 +380,13 @@ def incomplete_task(id):
 
 @app.route('/delete/<int:id>', methods=["POST"])
 def delete(id):
+    delete_csrf_token = request.form["delete_csrf_token"]
+
+    if not delete_csrf_token or delete_csrf_token == '':
+      logMsg = "in delete_task execution:token is none : data is %s."
+      logger.warning(logMsg, delete_csrf_token)
+      abort(400)
+
     task = TaskModel.query.get(id)
 
     if not task:
@@ -402,6 +409,13 @@ def delete(id):
 
 @app.route('/delete/allcomplete', methods=["POST"])
 def delete_allcomplete():
+    allcomplete_delete_csrf_token = request.form["allcomplete_delete_csrf_token"]
+
+    if not allcomplete_delete_csrf_token or allcomplete_delete_csrf_token == '':
+      logMsg = "in delete complete_task execution:token is none : data is %s."
+      logger.warning(logMsg, allcomplete_delete_csrf_token)
+      abort(400)
+
     complete_task = TaskModel.query.filter_by(commit=1).all()
 
     if not complete_task:

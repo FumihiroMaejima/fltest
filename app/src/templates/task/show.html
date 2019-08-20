@@ -26,6 +26,7 @@
             <td><a href="/edit/{{ task.id }}" class="btn btn-warning far fa-edit">編集する</a></td>
             <form action="/delete/{{ task.id }}" method="POST">
                 <td><input type="submit" class="btn btn-danger task-dell fas fa-trash-alt" value="削除する"></td>
+                <input type="hidden" name="delete_csrf_token" value="{{ csrf_token() }}" />
             </form>
             <form action="/complete/{{ task.id }}" method="POST">
                 <td><input type="submit" class="btn btn-info fas fa-check-circle" value="完了にする"></td>
