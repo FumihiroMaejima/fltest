@@ -319,6 +319,13 @@ def update_task():
 
 @app.route('/complete/<int:id>', methods=["POST"])
 def complete_task(id):
+    complete_csrf_token = request.form["complete_csrf_token"]
+
+    if not complete_csrf_token or complete_csrf_token == '':
+      logMsg = "in complete_task execution:token is none : data is %s."
+      logger.warning(logMsg, complete_csrf_token)
+      abort(400)
+
     task = TaskModel.query.get(id)
 
     if not task:
@@ -342,6 +349,13 @@ def complete_task(id):
 
 @app.route('/incomplete/<int:id>', methods=["POST"])
 def incomplete_task(id):
+    incomplete_csrf_token = request.form["incomplete_csrf_token"]
+
+    if not incomplete_csrf_token or incomplete_csrf_token == '':
+      logMsg = "in incomplete_task execution:token is none : data is %s."
+      logger.warning(logMsg, incomplete_csrf_token)
+      abort(400)
+
     task = TaskModel.query.get(id)
 
     if not task:

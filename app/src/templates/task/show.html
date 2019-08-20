@@ -29,9 +29,11 @@
             </form>
             <form action="/complete/{{ task.id }}" method="POST">
                 <td><input type="submit" class="btn btn-info fas fa-check-circle" value="完了にする"></td>
+                <input type="hidden" name="complete_csrf_token" value="{{ csrf_token() }}" />
             </form>
             <form action="/incomplete/{{ task.id }}" method="POST">
                 <td><input type="submit" class="btn btn-success fas fa-undo-alt" value="未完了にする"></td>
+                <input type="hidden" name="incomplete_csrf_token" value="{{ csrf_token() }}" />
             </form>
         </tr>
     </table>
