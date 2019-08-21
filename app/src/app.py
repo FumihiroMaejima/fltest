@@ -14,6 +14,10 @@ from database import init_db
 
 from database import db
 
+from blog_form import BlogForm
+
+#from make_taskform import TaskForm
+
 #from taskExe import TaskExec
 
 def create_app():
@@ -87,6 +91,22 @@ def hello():
     return "hello, " + datetime.now().strftime('%Y/%m/%d %H:%M:%S')
 
 
+@app.route("/testform", methods=["GET", "POST"])
+def indexform():
+    form = BlogForm()
+    if request.method == "GET":
+        message = "フォームを送ってみよう！！"
+        return render_template("testform.html", form=form, message=message)
+
+    if request.method == "POST":
+        if form.validate_on_submit():
+            message = "バリデーションを通ったよ＼(^o^)／"
+            return render_template("testform.html", form=form, message=message)
+
+        message = "バリデーションに失敗したよ(T_T)"
+        return render_template("testform.html", form=form, message=message)
+
+
 @app.route('/', methods=["GET"])
 def index():
     delete_create_session()
@@ -116,7 +136,6 @@ def show(id):
 
 @app.route('/new', methods=["GET"])
 def new_task():
-
     referer_page = request.headers.get("Referer")
     index_page = app.config['APP_URL'] + '/'
 
