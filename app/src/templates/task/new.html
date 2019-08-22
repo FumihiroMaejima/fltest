@@ -5,6 +5,12 @@
         <div class="form-group">
 
             <label for="title">ToDo</label>
+            {% if validation_msg["title_require"] != '' %}
+                <span style="color: #ff0000;">{{ validation_msg["title_require"] }}</span>
+            {% elif validation_msg["title_length"] != '' %}
+                <span style="color: #ff0000;">{{ validation_msg["title_length"] }}</span>
+            {% endif %}
+
             {% if session_title == '' %}
                 <input type="text" name="title" value="" class="form-control" placeholder="登録したいタスクを入力してください。">
             {% else %}
@@ -13,6 +19,9 @@
 
         </div>
         <div class="form-group">
+            {% if validation_msg["content_length"] != '' %}
+            <span style="color: #ff0000;">{{ validation_msg["content_length"] }}</span>
+            {% endif %}
 
             <label for="content">備考</label>
             {% if session_content == '' %}

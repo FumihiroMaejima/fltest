@@ -16,7 +16,7 @@ from database import db
 
 from blog_form import BlogForm
 
-#from make_taskform import TaskForm
+from taskform import TaskForm
 
 #from taskExe import TaskExec
 
@@ -136,6 +136,7 @@ def show(id):
 
 @app.route('/new', methods=["GET"])
 def new_task():
+    validation_msg = {"title_require":'', "title_length":'', "content_length":''}
     referer_page = request.headers.get("Referer")
     index_page = app.config['APP_URL'] + '/'
 
@@ -153,7 +154,7 @@ def new_task():
     else:
         abort(400)
 
-    return render_template("task/new.html", session_title=session_title, session_content=session_content, create_session_token=create_session_token)
+    return render_template("task/new.html", validation_msg=validation_msg, session_title=session_title, session_content=session_content, create_session_token=create_session_token)
 
 
 @app.route('/create_confirm', methods=["POST"])
@@ -162,6 +163,18 @@ def create_confirm():
     task_title = request.form["title"]
     task_content = request.form["content"]
     create_session_token = request.form["create_csrf_token"]
+
+    task_form = TaskForm(task_title, task_content)
+    title_null_check_msg = task_form.title_require()
+    title_validation_msg = task_form.title_length()
+    content_validation_msg = task_form.content_length()
+    validation_msg = {"title_require":title_null_check_msg, "title_length":title_validation_msg, "content_length":content_validation_msg}
+
+    if title_null_check_msg != '' or title_validation_msg != '' or content_validation_msg != '':
+      session['title'] = task_title
+      session['content'] = task_content
+      session['create_csrf_token'] = create_session_token
+      return render_template("task/new.html", validation_msg=validation_msg, session_title=task_title, session_content=task_content, create_session_token=create_session_token)
 
     if not task_title:
       logMsg = "in create task confirm page:task title is none : task title is %s."
