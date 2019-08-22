@@ -106,6 +106,10 @@ def indexform():
         return render_template("testform.html", form=form, message=message)
 
 
+@app.route('/login', methods=["GET"])
+def login_index():
+    return render_template("auth/login.html")
+
 @app.route('/', methods=["GET"])
 def index():
     delete_create_session()
