@@ -233,6 +233,7 @@ def create_task():
 
 @app.route('/edit/<int:id>', methods=["GET"])
 def edit_task(id):
+    validation_msg = {"title_require":'', "title_length":'', "content_length":''}
     task = TaskModel.query.get(id)
 
     if not task:
@@ -260,7 +261,7 @@ def edit_task(id):
     else :
         abort(400)
 
-    return render_template("task/edit.html", task=task, edit_session_token=edit_session_token)
+    return render_template("task/edit.html", validation_msg=validation_msg, task=task, edit_session_token=edit_session_token)
 
 
 @app.route('/update_confirm/', methods=["POST"])
@@ -271,7 +272,27 @@ def update_confirm():
     edit_session_token = request.form["edit_csrf_token"]
     session_task_id = session.get('edit_task_id')
 
+    if post_task_id != str(session_task_id):
+      logMsg = "in update task confirm execution:post data is wrong : request post_task_id is %s."
+      logger.warning(logMsg, post_task_id)
+      abort(400)
+
     task = TaskModel.query.get(post_task_id)
+
+    task_form = TaskForm(task_title, task_content)
+    title_null_check_msg = task_form.title_require()
+    title_validation_msg = task_form.title_length()
+    content_validation_msg = task_form.content_length()
+    validation_msg = {"title_require":title_null_check_msg, "title_length":title_validation_msg, "content_length":content_validation_msg}
+
+    if title_null_check_msg != '' or title_validation_msg != '' or content_validation_msg != '':
+      session['edit_title'] = task_title
+      session['edit_content'] = task_content
+      session['edit_csrf_token'] = edit_session_token
+      task.title = task_title
+      task.content = task_content
+      return render_template("task/edit.html", validation_msg=validation_msg, task=task, edit_session_token=edit_session_token)
+
 
     if not task:
       logMsg = "in update task confirm execution:query data is none : data is %s."
@@ -281,11 +302,6 @@ def update_confirm():
     if not task_title:
       logMsg = "in update task confirm execution:task title is none : task title is %s."
       logger.warning(logMsg, task_title)
-      abort(400)
-
-    if post_task_id != str(session_task_id):
-      logMsg = "in update task confirm execution:post data is wrong : request post_task_id is %s."
-      logger.warning(logMsg, post_task_id)
       abort(400)
 
     if 'edit_task_id' not in session or 'edit_title' not in session or 'edit_content' not in session:

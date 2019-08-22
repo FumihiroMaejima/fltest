@@ -19,11 +19,11 @@
 
         </div>
         <div class="form-group">
+            <label for="content">詳細</label>
             {% if validation_msg["content_length"] != '' %}
-            <span style="color: #ff0000;">{{ validation_msg["content_length"] }}</span>
+                <span style="color: #ff0000;">{{ validation_msg["content_length"] }}</span>
             {% endif %}
 
-            <label for="content">備考</label>
             {% if session_content == '' %}
                 <textarea class="form-control" name="content" cols="40" rows="10" placeholder="詳細な情報を入力してください。"></textarea>
             {% else %}

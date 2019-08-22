@@ -5,14 +5,22 @@
         <div class="form-group">
 
             <label for="title">ToDo</label><br>
-            <input type="text" name="title" value="{{ task.title }}" class="form-control">
+            {% if validation_msg["title_require"] != '' %}
+                <span style="color: #ff0000;">{{ validation_msg["title_require"] }}</span>
+            {% elif validation_msg["title_length"] != '' %}
+                <span style="color: #ff0000;">{{ validation_msg["title_length"] }}</span>
+            {% endif %}
+            <input type="text" name="title" value="{{ task.title }}" class="form-control" placeholder="登録したいタスクを入力してください。">
             <input type="hidden" name="task_id" value="{{ task.id }}" class="form-control">
 
         </div>
         <div class="form-group">
 
             <label for="content">詳細</label><br>
-            <textarea name="content" cols="40" rows="10" class="form-control">{{ task.content }}</textarea>
+            {% if validation_msg["content_length"] != '' %}
+                <span style="color: #ff0000;">{{ validation_msg["content_length"] }}</span>
+            {% endif %}
+            <textarea name="content" cols="40" rows="10" class="form-control" placeholder="詳細な情報を入力してください。">{{ task.content }}</textarea>
 
         </div>
         {% if edit_session_token == '' %}
