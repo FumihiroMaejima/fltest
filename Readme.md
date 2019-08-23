@@ -1,4 +1,4 @@
-# sample ToDO Site by Python
+# Sample ToDo Site by Python
 
 ### 構成
 
