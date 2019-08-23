@@ -1,0 +1,54 @@
+{% extends "layout.html" %}
+{% block content %}
+<div class="container">
+    <h1>ToDo List</h1>
+
+    <table class="table table-hover table-responsive">
+        <tr>
+            <th>Last Update</th>
+            <th>Title</th>
+            <th></th>
+            <th></th>
+            <th></th>
+        </tr>
+        {% for task in allTask %}
+        <div class="row">
+            {% if task.commit == 1 %}
+            <tr style="background-color:#a9a9a9;">
+            {% else %}
+            <tr>
+            {% endif %}
+                <td>{{ task.date }}</td>
+                <td>{{ task.title }}</td>
+                <td><a href="/show/{{ task.id }}" class="btn btn-success far fa-file-alt">詳細</a></td>
+                <form action="/complete/{{ task.id }}" method="POST">
+                    <td><input type="submit" class="btn btn-info fas fa-check-circle" value="完了にする"></td>
+                </form>
+                <form action="/incomplete/{{ task.id }}" method="POST">
+                    <td><input type="submit" class="btn btn-success fas fa-undo-alt" value="未完了にする"></td>
+                </form>
+            </tr>
+        </div>
+        {% endfor %}
+    </table>
+    <p>
+        <a href="/new" class="btn btn-primary far fa-file">新規作成</a>
+        <form action="/delete/allcomplete" method="POST">
+            <td><input type="submit" class="btn btn-danger complete-task-dell fas fa-trash-alt" value="完了済みをすべて削除する"></td>
+            <input type="hidden" name="allcomplete_delete_csrf_token" value="{{ csrf_token() }}" />
+        </form>
+    </p>
+</div>
+<script>
+    $(function () {
+        $(".complete-task-dell").click(function () {
+            if (confirm("完了済みの項目を全て削除します。よろしいですか？")) {
+                // そのまま削除を実行
+            }
+            else {
+                return false;
+            }
+        });
+    });
+</script>
+{% endblock %}

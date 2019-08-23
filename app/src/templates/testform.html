@@ -1,0 +1,40 @@
+{% extends "layout.html" %}
+{% block content %}
+<div class="container">
+    <h2>{{ message }}</h2>
+    <form method="POST" action="/testform">
+        {{ form.hidden_tag() }}
+
+        <div style="margin: 10px;">
+            {% for error in form.blog_title.errors %}
+            <span style="color: red;">{{ error }}</span>
+            {% endfor %}
+
+            {{ form.blog_title.label }}:
+            {{ form.blog_title(placeholder="バリデーションを実装") }}
+        </div>
+
+        <div style="margin: 10px;">
+            {% for error in form.description.errors %}
+            <span style="color: red;">{{ error }}</span>
+            {% endfor %}
+
+            {{ form.description.label }}:
+            {{ form.description(placeholder="validate_on_submit()を使えば、お手軽だよー") }}
+        </div>
+
+        <div style="margin: 10px;">
+            {% for error in form.tags.errors %}
+            <span style="color: red;">{{ error }}</span>
+            {% endfor %}
+
+            {{ form.tags.label }}:
+            {{ form.tags(placeholder="python,flask") }}
+        </div>
+
+        <div style="margin: 10px;">
+            <input type="submit" value="送信">
+        </div>
+    </form>
+</div>
+{% endblock %}

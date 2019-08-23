@@ -1,0 +1,27 @@
+{% extends "layout.html" %}
+{% block content %}
+<div class="container">
+    <form action="/update/" method="POST">
+        <div class="form-group">
+
+            <label for="title">ToDo</label>
+            <div class="form-control">{{ task_title }}</div>
+            <input type="hidden" name="title" value="{{ task_title }}" >
+            <input type="hidden" name="task_id" value="{{ task_id }}" class="form-control">
+
+        </div>
+        <div class="form-group">
+
+            <label for="content">備考</label>
+            <div class="form-control" style="height:250px;">{{ task_content }}</div>
+            <input type="hidden" name="content" value="{{ task_content }}">
+
+        </div>
+        <input type="hidden" name="edit_csrf_token" value="{{ edit_session_token }}" />
+
+        <button type="submit" class="btn btn-success">タスクの更新</button>
+        <a class="btn btn-danger" href="../edit/{{task_id}}">戻る</a>
+
+    </form>
+</div>
+{% endblock %}

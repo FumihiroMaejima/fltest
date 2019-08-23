@@ -1,0 +1,45 @@
+{% extends "layout.html" %}
+{% block content %}
+<div class="container">
+    <form action="/create_confirm" method="POST">
+        <div class="form-group">
+
+            <label for="title">ToDo</label>
+            {% if validation_msg["title_require"] != '' %}
+                <span style="color: #ff0000;">{{ validation_msg["title_require"] }}</span>
+            {% elif validation_msg["title_length"] != '' %}
+                <span style="color: #ff0000;">{{ validation_msg["title_length"] }}</span>
+            {% endif %}
+
+            {% if session_title == '' %}
+                <input type="text" name="title" value="" class="form-control" placeholder="登録したいタスクを入力してください。">
+            {% else %}
+                <input type="text" name="title" value="{{ session_title }}" class="form-control" placeholder="登録したいタスクを入力してください。">
+            {% endif %}
+
+        </div>
+        <div class="form-group">
+            <label for="content">詳細</label>
+            {% if validation_msg["content_length"] != '' %}
+                <span style="color: #ff0000;">{{ validation_msg["content_length"] }}</span>
+            {% endif %}
+
+            {% if session_content == '' %}
+                <textarea class="form-control" name="content" cols="40" rows="10" placeholder="詳細な情報を入力してください。"></textarea>
+            {% else %}
+                <textarea class="form-control" name="content" cols="40" rows="10" placeholder="詳細な情報を入力してください。">{{ session_content }}</textarea>
+            {% endif %}
+
+        </div>
+        {% if create_session_token == '' %}
+            <input type="hidden" name="create_csrf_token" value="{{ csrf_token() }}" />
+        {% else %}
+            <input type="hidden" name="create_csrf_token" value="{{ create_session_token }}" />
+        {% endif %}
+
+        <button type="submit" class="btn btn-primary">確認</button>
+        <a class="btn btn-danger" href="{{url_for('.index')}}">キャンセル</a>
+
+    </form>
+</div>
+{% endblock %}

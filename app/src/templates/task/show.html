@@ -1,0 +1,58 @@
+{% extends "layout.html" %}
+{% block content %}
+<div class="container">
+
+    <div class="card bg-light">
+        <div class="card-header">
+            <h2>{{ task.title }}</h2>
+        </div>
+        <div class="card-body">
+            <blockquote class="blockquote mb-0">
+                <p>{{ task.content }}</p>
+                <footer class="blockquote-footer"><cite title="Source Title">(Last Update: {{ task.date }})</cite>
+                </footer>
+            </blockquote>
+            {% if task.commit == 1 %}
+            <div class="alert alert-success" role="alert">
+                このタスクは既に完了しています。
+            </div>
+            {% endif %}
+        </div>
+    </div>
+
+    <br>
+    <table>
+        <tr>
+            <td><a href="/edit/{{ task.id }}" class="btn btn-warning far fa-edit">編集する</a></td>
+            <form action="/delete/{{ task.id }}" method="POST">
+                <td><input type="submit" class="btn btn-danger task-dell fas fa-trash-alt" value="削除する"></td>
+                <input type="hidden" name="delete_csrf_token" value="{{ csrf_token() }}" />
+            </form>
+            <form action="/complete/{{ task.id }}" method="POST">
+                <td><input type="submit" class="btn btn-info fas fa-check-circle" value="完了にする"></td>
+                <input type="hidden" name="complete_csrf_token" value="{{ csrf_token() }}" />
+            </form>
+            <form action="/incomplete/{{ task.id }}" method="POST">
+                <td><input type="submit" class="btn btn-success fas fa-undo-alt" value="未完了にする"></td>
+                <input type="hidden" name="incomplete_csrf_token" value="{{ csrf_token() }}" />
+            </form>
+        </tr>
+    </table>
+
+    <br>
+    <p><a href="/" class="btn btn-info">一覧に戻る</a></p>
+
+</div>
+<script>
+    $(function () {
+        $(".task-dell").click(function () {
+            if (confirm("本当に削除しますか？")) {
+                // そのまま削除を実行
+            }
+            else {
+                return false;
+            }
+        });
+    });
+</script>
+{% endblock %}
