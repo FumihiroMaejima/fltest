@@ -90,7 +90,7 @@ def delete_create_session():
         session.pop('create_csrf_token', None)
 
 
-def delete_create_validation_session():
+def delete_task_validation_session():
     if 'title_null_check_msg' in session:
         session.pop('title_null_check_msg', None)
     if 'title_validation_msg' in session:
@@ -235,6 +235,7 @@ def create_user_exec():
 def index():
     delete_create_session()
     delete_edit_session()
+    delete_task_validation_session()
     delete_user_create_session()
 
     task = TaskModel.query.all()
@@ -242,8 +243,7 @@ def index():
     if not task:
         logMsg = "in index page:query data is none : data is %s."
         logger.warning(logMsg, task)
-        #logMsg = "open todo page."
-        #logger.warning(logMsg)
+
     return render_template("index.html", allTask=task)
 
 
@@ -280,7 +280,7 @@ def new_task():
             validation_msg["title_require"] = session['title_null_check_msg']
             validation_msg["title_length"] = session['title_validation_msg']
             validation_msg["content_length"] = session['content_validation_msg']
-            delete_create_validation_session()
+            delete_task_validation_session()
     else:
         abort(400)
 
@@ -297,7 +297,7 @@ def create_confirm():
     title_null_check_msg = task_form.title_require()
     title_validation_msg = task_form.title_length()
     content_validation_msg = task_form.content_length()
-    validation_msg = {"title_require":title_null_check_msg, "title_length":title_validation_msg, "content_length":content_validation_msg}
+    #validation_msg = {"title_require":title_null_check_msg, "title_length":title_validation_msg, "content_length":content_validation_msg}
 
     if title_null_check_msg != '' or title_validation_msg != '' or content_validation_msg != '':
         session['title'] = task_title
@@ -391,6 +391,11 @@ def edit_task(id):
         task.title = session.get('edit_title')
         task.content = session.get('edit_content')
         edit_session_token = session.get('edit_csrf_token')
+        if 'title_null_check_msg' in session or 'title_validation_msg' in session or 'content_validation_msg' in session:
+            validation_msg["title_require"] = session['title_null_check_msg']
+            validation_msg["title_length"] = session['title_validation_msg']
+            validation_msg["content_length"] = session['content_validation_msg']
+            delete_task_validation_session()
     else :
         abort(400)
 
@@ -416,15 +421,17 @@ def update_confirm():
     title_null_check_msg = task_form.title_require()
     title_validation_msg = task_form.title_length()
     content_validation_msg = task_form.content_length()
-    validation_msg = {"title_require":title_null_check_msg, "title_length":title_validation_msg, "content_length":content_validation_msg}
+    #validation_msg = {"title_require":title_null_check_msg, "title_length":title_validation_msg, "content_length":content_validation_msg}
 
     if title_null_check_msg != '' or title_validation_msg != '' or content_validation_msg != '':
         session['edit_title'] = task_title
         session['edit_content'] = task_content
         session['edit_csrf_token'] = edit_session_token
-        task.title = task_title
-        task.content = task_content
-        return render_template("task/edit.html", validation_msg=validation_msg, task=task, edit_session_token=edit_session_token)
+        session['title_null_check_msg'] = title_null_check_msg
+        session['title_validation_msg'] = title_validation_msg
+        session['content_validation_msg'] = content_validation_msg
+        #return render_template("task/edit.html", validation_msg=validation_msg, task=task, edit_session_token=edit_session_token)
+        return redirect(url_for('.edit_task', id=session_task_id))
 
 
     if not task:
