@@ -90,6 +90,14 @@ def delete_create_session():
         session.pop('create_csrf_token', None)
 
 
+def delete_create_validation_session():
+    if 'title_null_check_msg' in session:
+        session.pop('title_null_check_msg', None)
+    if 'title_validation_msg' in session:
+        session.pop('title_validation_msg', None)
+    if 'content_validation_msg' in session:
+        session.pop('content_validation_msg', None)
+
 def delete_edit_session():
     if 'edit_task_id' in session:
         session.pop('edit_task_id', None)
@@ -268,6 +276,11 @@ def new_task():
         session_title = session.get('title')
         session_content = session.get('content')
         create_session_token = session.get('create_csrf_token')
+        if 'title_null_check_msg' in session or 'title_validation_msg' in session or 'content_validation_msg' in session:
+            validation_msg["title_require"] = session['title_null_check_msg']
+            validation_msg["title_length"] = session['title_validation_msg']
+            validation_msg["content_length"] = session['content_validation_msg']
+            delete_create_validation_session()
     else:
         abort(400)
 
@@ -290,7 +303,11 @@ def create_confirm():
         session['title'] = task_title
         session['content'] = task_content
         session['create_csrf_token'] = create_session_token
-        return render_template("task/new.html", validation_msg=validation_msg, session_title=task_title, session_content=task_content, create_session_token=create_session_token)
+        session['title_null_check_msg'] = title_null_check_msg
+        session['title_validation_msg'] = title_validation_msg
+        session['content_validation_msg'] = content_validation_msg
+        #return render_template("task/new.html", validation_msg=validation_msg, session_title=task_title, session_content=task_content, create_session_token=create_session_token)
+        return redirect(url_for('.new_task'))
 
     if not task_title:
         logMsg = "in create task confirm page:task title is none : task title is %s."
