@@ -6,9 +6,13 @@ from flask_wtf import FlaskForm
 
 from flask_wtf.csrf import CSRFProtect, CSRFError
 
+from flask_login import LoginManager, current_user, login_user, logout_user, login_required
+
 from log import logger
 
 from models.task import TaskModel, TaskSchema
+
+from models.user import UserModel
 
 from database import init_db
 
@@ -16,9 +20,9 @@ from database import db
 
 from blog_form import BlogForm
 
-from taskform import TaskForm
+from createUserForm import createUserForm
 
-#from taskExe import TaskExec
+from taskform import TaskForm
 
 def create_app():
     app = Flask(__name__)
@@ -32,6 +36,10 @@ def create_app():
 app = create_app()
 
 app.secret_key = app.config['SECRET_KEY']
+
+login_manager = LoginManager()
+
+login_manager.init_app(app)
 
 csrf = CSRFProtect(app)
 
@@ -60,6 +68,17 @@ app.register_error_handler(403, user_request_forbidden)
 app.register_error_handler(404, page_not_found)
 app.register_error_handler(405, request_method_not_allowed)
 # error handling end
+
+
+def delete_user_create_session():
+    if 'name' in session:
+        session.pop('title', None)
+    if 'email' in session:
+        session.pop('content', None)
+    if 'password' in session:
+        session.pop('password', None)
+    if 'user_create_csrf_token' in session:
+        session.pop('user_create_csrf_token', None)
 
 
 def delete_create_session():
@@ -106,14 +125,109 @@ def indexform():
         return render_template("testform.html", form=form, message=message)
 
 
+@login_manager.user_loader
+def load_user(user_id):
+    return UserModel.query.get(user_id)
+
+# 未認証の際のリダイレクト先を設定
+@login_manager.unauthorized_handler
+def unauthorized_callback():
+    return redirect(url_for('.login_index'))
+
+
 @app.route('/login', methods=["GET"])
 def login_index():
     return render_template("auth/login.html")
+
+
+@app.route('/user/create', methods=["GET", "POST"])
+def create_user():
+    form = createUserForm()
+
+    if request.method == 'POST' and form.validate_on_submit():
+        session['user_create_csrf_token'] = request.form["user_create_csrf_token"]
+        session['name'] = request.form["name"]
+        session['email'] = request.form["email"]
+        session['password'] = request.form["password"]
+        return redirect(url_for('.create_user_confirm'))
+    else:
+        return render_template("auth/new.html", form=form)
+
+
+@app.route('/user/create/confirm', methods=["GET"])
+def create_user_confirm():
+
+    if 'user_create_csrf_token' not in session:
+        logMsg = "in create user confirm execution:csrf token session is none."
+        logger.warning(logMsg)
+        abort(400)
+
+    if 'name' not in session or 'name' not in session or 'email' not in session or 'password' not in session:
+        logMsg = "in create user confirm execution:session data is wrong."
+        logger.warning(logMsg)
+        abort(400)
+
+    session_token = session.get('user_create_csrf_token')
+    session_name = session.get('name')
+    session_email = session.get('email')
+    session_password = session.get('password')
+
+    pass_length = len(session_password)
+    num = 1
+    mask_password = "●"
+    while num < pass_length:
+        mask_password = mask_password + "●"
+        num+=1
+
+    return render_template("auth/create_confirm.html", session_token=session_token, session_name=session_name, session_email=session_email, session_password=session_password, mask_password=mask_password)
+
+
+@app.route('/user/create/exec', methods=["POST"])
+def create_user_exec():
+    session_token = session.get('user_create_csrf_token')
+    session_name = session.get('name')
+    session_email = session.get('email')
+    session_password = session.get('password')
+
+    request_token = request.form["user_create_csrf_token"]
+    request_name = request.form["name"]
+    request_email = request.form["email"]
+    request_password = request.form["password"]
+
+    if session_token != request_token:
+        logMsg = "in create user execution:csrf token is wrong."
+        logger.warning(logMsg)
+        abort(400)
+
+    if session_name != request_name or session_email != request_email or session_password != request_password:
+        logMsg = "in create user execution:request data is wrong."
+        logger.warning(logMsg)
+        abort(400)
+
+    try:
+        new_user = UserModel(session_name, session_email)
+        new_user.password = session_password
+        new_user.date = str(datetime.today().year) + "-" + str(datetime.today().month) + "-" + str(datetime.today().day)
+        db.session.add(new_user)
+        db.session.commit()
+
+        delete_user_create_session()
+
+        return redirect(url_for('.index'))
+    except:
+        db.session.rollback()
+
+        logMsg = "in create user executionn: crate execution is failed. please return index page."
+        logger.warning(logMsg)
+        delete_user_create_session()
+        abort(400)
+
 
 @app.route('/', methods=["GET"])
 def index():
     delete_create_session()
     delete_edit_session()
+    delete_user_create_session()
 
     task = TaskModel.query.all()
 

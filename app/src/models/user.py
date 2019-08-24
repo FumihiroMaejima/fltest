@@ -38,8 +38,9 @@ class UserModel(UserMixin, db.Model):
     password_descriptor = property(_get_password, _set_password)
     password = synonym('_password', descriptor=password_descriptor)
 
-    def __init__(self, id):
-        self.id = id
+    def __init__(self, name, email):
+        self.name = name
+        self.email = email
 
     # フォームで送信されたパスワードの検証
     def check_password(self, password):

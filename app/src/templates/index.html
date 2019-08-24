@@ -34,9 +34,10 @@
     <p>
         <a href="/new" class="btn btn-primary far fa-file">新規作成</a>
         <form action="/delete/allcomplete" method="POST">
-            <td><input type="submit" class="btn btn-danger complete-task-dell fas fa-trash-alt" value="完了済みをすべて削除する"></td>
+            <input type="submit" class="btn btn-danger complete-task-dell fas fa-trash-alt" value="完了済みをすべて削除する">
             <input type="hidden" name="allcomplete_delete_csrf_token" value="{{ csrf_token() }}" />
         </form>
+        <div style="margin-top:15px;"><a href="/user/create" class="btn btn-primary far fa-user">ユーザー作成</a><div>
     </p>
 </div>
 <script>

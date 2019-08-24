@@ -1,0 +1,56 @@
+{% extends "layout.html" %}
+{% block content %}
+<div class="container" style="margin-bottom:350px;">
+    <h1>Create User</h1>
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card">
+                <div class="card-header">Create User  Confirm</div>
+
+                <div class="card-body">
+                    <form action="/user/create/exec" method="POST">
+                        <input type="hidden" name="user_create_csrf_token" value="{{ session_token }}" />
+
+                        <div class="form-group row">
+                            <label for="name" class="col-sm-4 col-form-label text-md-right">名前</label>
+
+                            <div class="col-md-6">
+                                <div class="form-control">{{ session_name }}</div>
+                                <input type="hidden" name="name" value="{{ session_name }}">
+                            </div>
+                        </div>
+
+                        <div class="form-group row">
+                            <label for="email" class="col-sm-4 col-form-label text-md-right">メールアドレス</label>
+
+                            <div class="col-md-6">
+                                <div class="form-control">{{ session_email }}</div>
+                                <input type="hidden" name="email" value="{{ session_email }}">
+                            </div>
+                        </div>
+
+                        <div class="form-group row">
+                            <label for="password" class="col-md-4 col-form-label text-md-right">パスワード</label>
+
+                            <div class="col-md-6">
+
+                                <div class="form-control" type="password">{{mask_password}}</div>
+                                <!--<div class="form-control">{{ session_password }}</div>-->
+                                <input type="hidden" name="password" value="{{ session_password }}">
+                            </div>
+                        </div>
+
+                        <div class="form-group row mb-0">
+                            <div class="col-md-8 offset-md-4">
+                                <input type="submit" class="btn btn-success">
+                                <a class="btn btn-danger" href="{{url_for('.create_user')}}">戻る</a>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</div>
+{% endblock %}
