@@ -8,14 +8,22 @@
                 <div class="card-header">Login Form</div>
 
                 <div class="card-body">
-                    <form action="/login/exec" method="POST">
-                        <input type="hidden" name="user_csrf_token" value="{{ csrf_token() }}" />
+                    <form action="/login" method="POST">
+                        <input type="hidden" name="login_csrf_token" value="{{ csrf_token() }}" />
+                        {{ form.hidden_tag() }}
 
                         <div class="form-group row">
                             <label for="email" class="col-sm-4 col-form-label text-md-right">メールアドレス</label>
 
                             <div class="col-md-6">
-                                <input id="email" type="email" class="form-control" name="email" value="" required autofocus>
+                                {% if form.email.errors %}
+                                    {{ form.email(class="form-control form-control is-invalid") }}
+                                    {% for errors in form.email.errors %}
+                                        <span style="color: #ff0000;">{{ errors }}</span>
+                                    {% endfor %}
+                                {% else %}
+                                    {{ form.email(class="form-control", placeholder='メールアドレス') }}
+                                {% endif %}
                             </div>
                         </div>
 
@@ -23,13 +31,20 @@
                             <label for="password" class="col-md-4 col-form-label text-md-right">パスワード</label>
 
                             <div class="col-md-6">
-                                <input id="password" type="password" class="form-control" name="password" required>
+                                {% if form.password.errors %}
+                                    {{ form.password(class="form-control form-control is-invalid") }}
+                                    {% for errors in form.password.errors %}
+                                        <span style="color: #ff0000;">{{ errors }}</span>
+                                    {% endfor %}
+                                {% else %}
+                                    {{ form.password(class="form-control", placeholder='パスワード') }}
+                                {% endif %}
                             </div>
                         </div>
 
                         <div class="form-group row mb-0">
                             <div class="col-md-8 offset-md-4">
-                                <input type="submit" class="btn btn-success" value="ログイン">
+                                {{ form.submit(class="btn btn-primary") }}
                             </div>
                         </div>
                     </form>

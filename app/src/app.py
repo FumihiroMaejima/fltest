@@ -20,6 +20,8 @@ from database import db
 
 from blog_form import BlogForm
 
+from loginForm import loginForm
+
 from createUserForm import createUserForm
 
 from taskform import TaskForm
@@ -143,12 +145,47 @@ def unauthorized_callback():
     return redirect(url_for('.login_index'))
 
 
-@app.route('/login', methods=["GET"])
+@app.route('/login', methods=["GET", "POST"])
 def login_index():
-    return render_template("auth/login.html")
+    form = loginForm()
+
+    if request.method == 'POST' and form.validate_on_submit():
+        session['login_csrf_token'] = request.form["login_csrf_token"]
+
+        user, authenticated = UserModel.auth(db.session.query, form.email.data, form.password.data)
+
+        user_id = user.id
+        if user_id == None:
+          logMsg = "in login execution: user_id is %s."
+          logger.warning(logMsg, user)
+          return render_template("auth/login.html", form=form)
+
+        if authenticated:
+            login_user(user)
+            return redirect(url_for('.index'))
+        else:
+            return render_template("auth/login.html", form=form)
+    else:
+        return render_template("auth/login.html", form=form)
 
 
-@app.route('/user/create', methods=["GET", "POST"])
+@app.route('/logout', methods=["POST"])
+@login_required
+def logout():
+    request_token = request.form["login_csrf_token"]
+    session_token = session.get('login_csrf_token')
+
+    if request_token != session_token:
+        logMsg = "in logout execution: token is wrong. token is %s."
+        logger.warning(logMsg, request_token)
+        abort(400)
+    else:
+        session.pop('login_csrf_token', None)
+
+    logout_user()
+    return redirect(url_for('.login_index'))
+
+
 def create_user():
     form = createUserForm()
 
@@ -163,6 +200,7 @@ def create_user():
 
 
 @app.route('/user/create/confirm', methods=["GET"])
+@login_required
 def create_user_confirm():
 
     if 'user_create_csrf_token' not in session:
@@ -191,6 +229,7 @@ def create_user_confirm():
 
 
 @app.route('/user/create/exec', methods=["POST"])
+@login_required
 def create_user_exec():
     session_token = session.get('user_create_csrf_token')
     session_name = session.get('name')
@@ -213,7 +252,8 @@ def create_user_exec():
         abort(400)
 
     try:
-        new_user = UserModel(session_name, session_email)
+        new_user = UserModel(session_email)
+        new_user.name = session_name
         new_user.password = session_password
         new_user.date = str(datetime.today().year) + "-" + str(datetime.today().month) + "-" + str(datetime.today().day)
         db.session.add(new_user)
@@ -232,11 +272,17 @@ def create_user_exec():
 
 
 @app.route('/', methods=["GET"])
+@login_required
 def index():
     delete_create_session()
     delete_edit_session()
     delete_task_validation_session()
     delete_user_create_session()
+
+    if 'login_csrf_token' not in session:
+        abort(400)
+    login_token = session.get('login_csrf_token')
+
 
     task = TaskModel.query.all()
 
@@ -244,10 +290,11 @@ def index():
         logMsg = "in index page:query data is none : data is %s."
         logger.warning(logMsg, task)
 
-    return render_template("index.html", allTask=task)
+    return render_template("index.html", login_token=login_token, allTask=task)
 
 
 @app.route('/show/<int:id>', methods=["GET"])
+@login_required
 def show(id):
     task = TaskModel.query.get(id)
 
@@ -260,6 +307,7 @@ def show(id):
 
 
 @app.route('/new', methods=["GET"])
+@login_required
 def new_task():
     validation_msg = {"title_require":'', "title_length":'', "content_length":''}
     referer_page = request.headers.get("Referer")
@@ -288,6 +336,7 @@ def new_task():
 
 
 @app.route('/create_confirm', methods=["POST"])
+@login_required
 def create_confirm():
     task_title = request.form["title"]
     task_content = request.form["content"]
@@ -325,6 +374,7 @@ def create_confirm():
 
 
 @app.route('/create', methods=["POST"])
+@login_required
 def create_task():
     session_title = session.get('title')
     session_content = session.get('content')
@@ -365,6 +415,7 @@ def create_task():
 
 
 @app.route('/edit/<int:id>', methods=["GET"])
+@login_required
 def edit_task(id):
     validation_msg = {"title_require":'', "title_length":'', "content_length":''}
     task = TaskModel.query.get(id)
@@ -403,6 +454,7 @@ def edit_task(id):
 
 
 @app.route('/update_confirm/', methods=["POST"])
+@login_required
 def update_confirm():
     post_task_id = request.form["task_id"]
     task_title = request.form["title"]
@@ -455,6 +507,7 @@ def update_confirm():
 
 
 @app.route('/update/', methods=["POST"])
+@login_required
 def update_task():
     session_task_id = session.get('edit_task_id')
     session_title = session.get('edit_title')
@@ -506,6 +559,7 @@ def update_task():
 
 
 @app.route('/complete/<int:id>', methods=["POST"])
+@login_required
 def complete_task(id):
     complete_csrf_token = request.form["complete_csrf_token"]
 
@@ -536,6 +590,7 @@ def complete_task(id):
 
 
 @app.route('/incomplete/<int:id>', methods=["POST"])
+@login_required
 def incomplete_task(id):
     incomplete_csrf_token = request.form["incomplete_csrf_token"]
 
@@ -566,6 +621,7 @@ def incomplete_task(id):
 
 
 @app.route('/delete/<int:id>', methods=["POST"])
+@login_required
 def delete(id):
     delete_csrf_token = request.form["delete_csrf_token"]
 
@@ -595,6 +651,7 @@ def delete(id):
 
 
 @app.route('/delete/allcomplete', methods=["POST"])
+@login_required
 def delete_allcomplete():
     allcomplete_delete_csrf_token = request.form["allcomplete_delete_csrf_token"]
 

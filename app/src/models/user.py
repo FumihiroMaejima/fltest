@@ -27,6 +27,9 @@ class UserModel(UserMixin, db.Model):
     createTime = db.Column(db.DateTime, nullable=False, default=datetime.now)
     updateTime = db.Column(db.DateTime, nullable=False, default=datetime.now, onupdate=datetime.now)
 
+    def __init__(self, email):
+        self.email = email
+
     def _get_password(self):
         return self._password
 
@@ -37,10 +40,6 @@ class UserModel(UserMixin, db.Model):
 
     password_descriptor = property(_get_password, _set_password)
     password = synonym('_password', descriptor=password_descriptor)
-
-    def __init__(self, name, email):
-        self.name = name
-        self.email = email
 
     # フォームで送信されたパスワードの検証
     def check_password(self, password):

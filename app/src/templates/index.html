@@ -38,12 +38,27 @@
             <input type="hidden" name="allcomplete_delete_csrf_token" value="{{ csrf_token() }}" />
         </form>
         <div style="margin-top:15px;"><a href="/user/create" class="btn btn-primary far fa-user">ユーザー作成</a><div>
+        <div style="margin-top:15px;">
+            <form action="/logout" method="POST">
+                <input type="submit" class="btn btn-danger logout-user fas fa-trash-alt" value="ログアウト">
+                <input type="hidden" name="login_csrf_token" value="{{ login_token }}" />
+            </form>
+        </div>
     </p>
 </div>
 <script>
     $(function () {
         $(".complete-task-dell").click(function () {
             if (confirm("完了済みの項目を全て削除します。よろしいですか？")) {
+                // そのまま削除を実行
+            }
+            else {
+                return false;
+            }
+        });
+
+        $(".logout-user").click(function () {
+            if (confirm("ログアウトします。よろしいですか？")) {
                 // そのまま削除を実行
             }
             else {
