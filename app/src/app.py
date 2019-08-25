@@ -18,8 +18,6 @@ from database import init_db
 
 from database import db
 
-from blog_form import BlogForm
-
 from loginForm import loginForm
 
 from createUserForm import createUserForm
@@ -109,30 +107,6 @@ def delete_edit_session():
         session.pop('edit_content', None)
     if 'edit_csrf_token' in session:
         session.pop('edit_csrf_token', None)
-
-
-@app.route('/test', methods=["GET"])
-def hello():
-    logMsg = "open test index page."
-    logger.warning(logMsg)
-    from datetime import datetime
-    return "hello, " + datetime.now().strftime('%Y/%m/%d %H:%M:%S')
-
-
-@app.route("/testform", methods=["GET", "POST"])
-def indexform():
-    form = BlogForm()
-    if request.method == "GET":
-        message = "フォームを送ってみよう！！"
-        return render_template("testform.html", form=form, message=message)
-
-    if request.method == "POST":
-        if form.validate_on_submit():
-            message = "バリデーションを通ったよ＼(^o^)／"
-            return render_template("testform.html", form=form, message=message)
-
-        message = "バリデーションに失敗したよ(T_T)"
-        return render_template("testform.html", form=form, message=message)
 
 
 @login_manager.user_loader
