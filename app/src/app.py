@@ -160,6 +160,7 @@ def logout():
     return redirect(url_for('.login_index'))
 
 
+@app.route('/user/create', methods=["GET", "POST"])
 def create_user():
     form = createUserForm()
 
