@@ -1,16 +1,31 @@
 {% extends "layout.html" %}
 {% block content %}
 <div class="container" style="margin-bottom:350px;">
-    <h1>ToDo List Login</h1>
+    <h1>Create User</h1>
     <div class="row justify-content-center">
         <div class="col-md-8">
             <div class="card">
-                <div class="card-header">Login Form</div>
+                <div class="card-header">Create User Form</div>
 
                 <div class="card-body">
-                    <form action="/login" method="POST">
-                        <input type="hidden" name="login_csrf_token" value="{{ csrf_token() }}" />
+                    <form action="/user/create" method="POST">
+                        <input type="hidden" name="user_create_csrf_token" value="{{ csrf_token() }}" />
                         {{ form.hidden_tag() }}
+
+                        <div class="form-group row">
+                            <label for="name" class="col-sm-4 col-form-label text-md-right">名前</label>
+
+                            <div class="col-md-6">
+                                {% if form.name.errors %}
+                                    {{ form.name(class="form-control form-control is-invalid") }}
+                                    {% for errors in form.name.errors %}
+                                        <span style="color: #ff0000;">{{ errors }}</span>
+                                    {% endfor %}
+                                {% else %}
+                                    {{ form.name(class="form-control", placeholder='お名前') }}
+                                {% endif %}
+                            </div>
+                        </div>
 
                         <div class="form-group row">
                             <label for="email" class="col-sm-4 col-form-label text-md-right">メールアドレス</label>
@@ -38,6 +53,22 @@
                                     {% endfor %}
                                 {% else %}
                                     {{ form.password(class="form-control", placeholder='パスワード') }}
+                                {% endif %}
+
+                            </div>
+                        </div>
+
+                        <div class="form-group row">
+                            <label for="confirm_password" class="col-md-4 col-form-label text-md-right">パスワード【確認用】</label>
+
+                            <div class="col-md-6">
+                                {% if form.confirm_password.errors %}
+                                    {{ form.confirm_password(class="form-control form-control is-invalid") }}
+                                    {% for errors in form.confirm_password.errors %}
+                                        <span style="color: #ff0000;">{{ errors }}</span>
+                                    {% endfor %}
+                                {% else %}
+                                    {{ form.confirm_password(class="form-control", placeholder='パスワードを再度入力してください。') }}
                                 {% endif %}
                             </div>
                         </div>

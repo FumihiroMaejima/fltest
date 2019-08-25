@@ -15,7 +15,8 @@ class DevelopmentConfig:
   SQLALCHEMY_ECHO = False
   APP_URL = os.getenv('APP_URL', 'test')
   SECRET_KEY = '\xfd{H\xe5<\x95\xf9\xe3\x96.5\xd1\x01O<!\xd5\xa2\xa0\x9fR"\xa1\xa8'
-  ENV = os.getenv('APP_ENV', 'local')
+  ENV = os.getenv('APP_ENV', 'develop')
+  WTF_CSRF_SECRET_KEY = os.urandom(24)
 
 
 Config = DevelopmentConfig
