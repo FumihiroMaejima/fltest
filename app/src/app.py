@@ -118,6 +118,9 @@ def load_user(user_id):
 def unauthorized_callback():
     return redirect(url_for('.login_index'))
 
+@app.route('/.well-known/acme-challenge/<filename>')
+def well_known(filename):
+    return render_template('.well-known/acme-challenge/' + filename)
 
 @app.route('/login', methods=["GET", "POST"])
 def login_index():

@@ -1,0 +1,47 @@
+version: "3.5"
+
+services:
+
+  uwsgi:
+    build: ./app
+    container_name: fltest_ssl_uwsgi
+    volumes:
+      - ./app:/var/www/
+    ports:
+      - "${UWSGI_PORT}:${UWSGI_PORT}"
+    tty: true
+    environment:
+      TZ: "Asia/Tokyo"
+      APP_URL: ${APP_URL}
+      APP_ENV: ${APP_ENV}
+      DB_USER: ${DB_USER}
+      DB_PASSWORD: ${DB_PASSWORD}
+      DB_HOST: ${DB_HOST}
+      DB_DATABASE: ${DB_DATABASE}
+
+  nginx:
+    build: ./nginx
+    container_name: fltest_ssl_nginx
+    volumes:
+      - ./nginx/nginx.conf:/etc/nginx/nginx.conf
+      - /var/log/nginx:/var/log/nginx
+      - /etc/letsencrypt:/etc/letsencrypt
+    links:
+      - uwsgi
+    ports:
+      - "${NGINX_HOST_HTTP_PORT}:${NGINX_HOST_HTTP_PORT}"
+      - "${NGINX_HOST_HTTPS_PORT}:${NGINX_HOST_HTTPS_PORT}"
+    environment:
+      TZ: "Asia/Tokyo"
+
+  db:
+    build: ./mysql
+    container_name: fltest_ssl_db
+    volumes:
+      - ./mysql/mysql_data:/var/lib/mysql # データの永続化
+      - ./mysql/sql:/docker-entrypoint-initdb.d
+    ports:
+      - "${MYSQL_PORT}:${MYSQL_PORT}"
+    environment:
+      TZ: "Asia/Tokyo"
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
